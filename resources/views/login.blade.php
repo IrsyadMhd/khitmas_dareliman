@@ -5,11 +5,11 @@
 <div class="card">
     <h2 class="section-title">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        Masuk dengan Akun Dareliman
+        Masuk dengan Akun SIPDEI Daareliman 
     </h2>
     
     <div class="alert alert-info">
-        Gunakan email dan password akun Dareliman Anda untuk memverifikasi identitas dan memulai pendaftaran.
+        Gunakan email/NIS dan password akun SIPDEI Daareliman Anak untuk memverifikasi identitas dan memulai pendaftaran.
     </div>
 
     @error('login')
@@ -20,7 +20,7 @@
         @csrf
         
         <div class="form-group">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">Email/NIS</label>
             <input type="email" name="email" id="email" class="form-input" value="{{ old('email') }}" required autofocus autocomplete="email">
             @error('email')
                 <span class="error-text">{{ $message }}</span>
@@ -38,6 +38,10 @@
         <button type="submit" class="btn-primary btn-block mt-4" id="submitBtn">
             Masuk / Verifikasi
         </button>
+        
+        <div class="text-center mt-4">
+            <a href="{{ route('landing') }}" class="text-muted" style="text-decoration: none;">Kembali ke Pilihan Jalur</a>
+        </div>
     </form>
 </div>
 @endsection

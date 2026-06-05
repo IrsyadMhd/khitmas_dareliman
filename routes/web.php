@@ -1,25 +1,50 @@
 <?php
 
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\UmumController;
 use Illuminate\Support\Facades\Route;
 
-// Redirect root to login
+// Landing page untuk memilih jalur
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('landing');
+})->name('landing');
 
-Route::get('/login', [PendaftaranController::class, 'showLogin'])->name('login');
-Route::post('/login', [PendaftaranController::class, 'processLogin'])
+// Jalur Internal Dareliman
+Route::get('/dareliman/login', [PendaftaranController::class, 'showLogin'])->name('login');
+Route::post('/dareliman/login', [PendaftaranController::class, 'processLogin'])
     ->name('login.process')
     ->middleware('throttle:5,1'); // Limit login attempts: 5 requests per 1 minute
 
-Route::get('/daftar', [PendaftaranController::class, 'showForm'])->name('daftar');
-Route::post('/daftar', [PendaftaranController::class, 'submitForm'])->name('daftar.submit');
+Route::get('/dareliman/daftar', [PendaftaranController::class, 'showForm'])->name('daftar');
+Route::post('/dareliman/daftar', [PendaftaranController::class, 'submitForm'])->name('daftar.submit');
 
 Route::get('/sukses/{kode}', [PendaftaranController::class, 'showSuccess'])->name('sukses');
 Route::get('/ineligible', [PendaftaranController::class, 'showIneligible'])->name('ineligible');
-
 Route::get('/logout', [PendaftaranController::class, 'logout'])->name('logout');
+
+// Jalur Umum
+Route::prefix('umum')->name('umum.')->group(function () {
+    Route::get('/daftar', [UmumController::class, 'showForm'])->name('daftar');
+    Route::post('/daftar', [UmumController::class, 'submitForm'])->name('daftar.submit');
+    
+    Route::get('/login', [UmumController::class, 'showLogin'])->name('login');
+    Route::post('/login', [UmumController::class, 'processLogin'])->name('login.process');
+    
+    Route::get('/dashboard', [UmumController::class, 'dashboard'])->name('dashboard');
+    Route::get('/logout', [UmumController::class, 'logout'])->name('logout');
+});
+
+// Admin Panel Rahasia
+Route::prefix('panel-rahasia')->name('admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\AdminController::class, 'showLogin'])->name('login');
+    Route::post('/', [\App\Http\Controllers\AdminController::class, 'processLogin'])->name('login.process');
+    
+    Route::get('/settings', [\App\Http\Controllers\AdminController::class, 'showSettings'])->name('settings');
+    Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
+    
+    Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
+});
 
 // Check-in API for event staff (could be protected by auth/middleware in the future)
 Route::post('/api/checkin/{kode}', [PendaftaranController::class, 'checkin'])->name('api.checkin');
+

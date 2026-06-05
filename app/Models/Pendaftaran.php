@@ -13,6 +13,7 @@ class Pendaftaran extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'is_umum',
         'siswa_id',
         'nama_lengkap',
         'tempat_lahir',
@@ -45,8 +46,8 @@ class Pendaftaran extends Model
         return [
             'tanggal_lahir' => 'date',
             'consent_wali' => 'boolean',
+            'is_umum' => 'boolean',
             'waktu_checkin' => 'datetime',
-            'siswa_id' => 'integer',
             'id_jenis_sekolah' => 'integer',
         ];
     }

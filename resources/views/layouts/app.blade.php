@@ -18,7 +18,7 @@
             <div class="logo-area">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftfXfbo6h7VVA8V1KcU64xX2Ieu_e6lah-w&s" alt="Dareliman Peduli" style="height: 45px; object-fit: contain; background: white; padding: 2px; border-radius: 4px;">
                 <span class="logo-divider">×</span>
-                <div class="logo-placeholder">Surau TV</div>
+                <img src="https://yt3.googleusercontent.com/GFi7193YpHy_dGaVEYKhjCAF9x04QJtKbVotTp-JEtHOsLNBFje9XoLPzlRShQNufjFj9BSEGQ=s900-c-k-c0x00ffffff-no-rj" alt="Surau TV" style="height: 45px; object-fit: contain; background: white; padding: 2px; border-radius: 4px;">
             </div>
             <h1 class="header-title">Pendaftaran Khitanan Massal</h1>
             <p class="header-subtitle">Dareliman Peduli bekerja sama dengan Surau TV</p>

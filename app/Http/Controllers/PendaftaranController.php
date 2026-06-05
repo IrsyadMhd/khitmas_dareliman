@@ -90,8 +90,12 @@ class PendaftaranController extends Controller
     /**
      * Show the registration form with auto-filled biodata.
      */
-    public function showForm()
+    public function showForm(\App\Services\SettingsService $settingsService)
     {
+        if (!$settingsService->isDarelimanOpen()) {
+            return view('closed');
+        }
+
         $siswa = session('siswa_data');
 
         if (!$siswa) {
@@ -120,8 +124,12 @@ class PendaftaranController extends Controller
     /**
      * Submit the registration form.
      */
-    public function submitForm(PendaftaranRequest $request)
+    public function submitForm(PendaftaranRequest $request, \App\Services\SettingsService $settingsService)
     {
+        if (!$settingsService->isDarelimanOpen()) {
+            return view('closed');
+        }
+
         $siswa = session('siswa_data');
 
         if (!$siswa) {

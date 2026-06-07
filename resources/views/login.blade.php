@@ -9,7 +9,7 @@
     </h2>
     
     <div class="alert alert-info">
-        Gunakan email/NIS dan password akun SIPDEI Daareliman Anak untuk memverifikasi identitas dan memulai pendaftaran.
+        Gunakan NIS dan password akun SIPDEI Daareliman Anak untuk memverifikasi identitas dan memulai pendaftaran.
     </div>
 
     @error('login')
@@ -20,7 +20,7 @@
         @csrf
         
         <div class="form-group">
-            <label for="email" class="form-label">Email/NIS</label>
+            <label for="email" class="form-label">NIS</label>
             <input type="email" name="email" id="email" class="form-input" value="{{ old('email') }}" required autofocus autocomplete="email">
             @error('email')
                 <span class="error-text">{{ $message }}</span>
@@ -40,6 +40,13 @@
         </button>
         
         <div class="text-center mt-4">
+            <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 5px;">
+                Jika Lupa Password Silakan Klik 
+                <a href="https://sipdei.dareliman.tech/reset_password" target="_blank" style="color: #007bff; text-decoration: underline; font-weight: bold;">Disini</a>
+            </p>
+        </div>
+        
+        <div class="text-center mt-2">
             <a href="{{ route('landing') }}" class="text-muted" style="text-decoration: none;">Kembali ke Pilihan Jalur</a>
         </div>
     </form>

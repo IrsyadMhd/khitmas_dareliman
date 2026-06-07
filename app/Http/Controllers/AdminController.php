@@ -69,6 +69,16 @@ class AdminController extends Controller
         return back()->with('success', 'Pengaturan berhasil disimpan.');
     }
 
+    public function showLaporan()
+    {
+        if (!session('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $pendaftarans = \App\Models\Pendaftaran::orderBy('created_at', 'desc')->get();
+        return view('admin.laporan', compact('pendaftarans'));
+    }
+
     public function logout()
     {
         session()->forget('admin_logged_in');

@@ -8,7 +8,7 @@
     <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
         <a href="{{ route('login') }}" class="btn-primary" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; text-decoration: none;">
             <span style="font-size: 1.25rem; font-weight: bold;">Siswa Dareliman</span>
-            <span style="font-size: 0.875rem; font-weight: normal; opacity: 0.9;">Untuk siswa yang sudah terdaftar di TAUD/TK/SD Dareliman</span>
+            <span style="font-size: 0.875rem; font-weight: normal; opacity: 0.9;">Untuk siswa yang sudah terdaftar di Jenjang TAUD / TK / MITSAQU / SDIT Dareliman</span>
         </a>
         
         <a href="{{ route('umum.daftar') }}" class="btn-primary" style="background-color: var(--warning); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; text-decoration: none;">

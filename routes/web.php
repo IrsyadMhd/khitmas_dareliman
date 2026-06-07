@@ -41,6 +41,8 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     
     Route::get('/settings', [\App\Http\Controllers\AdminController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
+
+    Route::get('/laporan', [\App\Http\Controllers\AdminController::class, 'showLaporan'])->name('laporan');
     
     Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
 });

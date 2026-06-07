@@ -48,3 +48,6 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
 // Check-in API for event staff (could be protected by auth/middleware in the future)
 Route::post('/api/checkin/{kode}', [PendaftaranController::class, 'checkin'])->name('api.checkin');
 
+// Database Export API (Protected by API Key)
+Route::get('/api/pendaftar', [\App\Http\Controllers\ApiController::class, 'getPendaftar'])->name('api.pendaftar');
+

@@ -87,8 +87,13 @@
             Daftarkan Peserta
         </button>
         
+        <div class="mt-4 text-center">
+            <p class="small text-muted" style="margin-bottom: 0.5rem;">Sudah mendaftar di jalur Umum?</p>
+            <a href="{{ route('umum.login') }}" style="color: var(--primary); font-weight: bold; text-decoration: none;">Cek Barcode Pendaftaran Anda</a>
+        </div>
+        
         <div class="text-center mt-4">
-            <a href="{{ route('landing') }}" class="text-muted" style="text-decoration: none;">Kembali</a>
+            <a href="{{ route('landing') }}" class="text-muted" style="text-decoration: none; font-size: 0.875rem;">Kembali ke Halaman Utama</a>
         </div>
     </form>
 </div>

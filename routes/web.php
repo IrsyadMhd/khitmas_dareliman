@@ -4,9 +4,20 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\UmumController;
 use Illuminate\Support\Facades\Route;
 
-// Landing page untuk memilih jalur
-Route::get('/', function () {
-    return view('landing');
+// Landing page atau smart redirect berdasarkan status buka/tutup pendaftaran
+Route::get('/', function (\App\Services\SettingsService $settings) {
+    $darelimanOpen = $settings->isDarelimanOpen();
+    $umumOpen = $settings->isUmumOpen();
+
+    if ($darelimanOpen && $umumOpen) {
+        return view('landing');
+    } elseif ($darelimanOpen && !$umumOpen) {
+        return redirect()->route('login');
+    } elseif (!$darelimanOpen && $umumOpen) {
+        return redirect()->route('umum.daftar');
+    } else {
+        return view('closed');
+    }
 })->name('landing');
 
 // Jalur Internal Dareliman
@@ -47,7 +58,16 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
 });
 
-// Check-in API for event staff (could be protected by auth/middleware in the future)
+// Scanner Kehadiran Panitia
+Route::prefix('scan-kehadiran')->name('scanner.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\CheckinController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\CheckinController::class, 'processLogin'])->name('login.process');
+    
+    Route::get('/', [\App\Http\Controllers\CheckinController::class, 'showScanner'])->name('index');
+    Route::post('/process', [\App\Http\Controllers\CheckinController::class, 'processScan'])->name('process');
+});
+
+// Check-in API for event staff (Legacy/Fallback API if needed)
 Route::post('/api/checkin/{kode}', [PendaftaranController::class, 'checkin'])->name('api.checkin');
 
 // Database Export API (Protected by API Key)

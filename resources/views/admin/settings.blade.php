@@ -90,3 +90,14 @@
         }
     }
 </script>
+
+@stack('styles')
+<style>
+    /* Desktop Layout Adjustments */
+    @media (min-width: 768px) {
+        main.container { max-width: 800px !important; }
+    }
+    @media (max-width: 768px) {
+        .section-title { font-size: 1.1rem; flex-wrap: wrap; }
+    }
+</style>

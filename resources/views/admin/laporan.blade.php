@@ -14,17 +14,27 @@
         </div>
     </div>
 
-    <div style="margin-bottom: 1rem; color: var(--text-secondary);">
-        Total Pendaftar: <strong>{{ $pendaftarans->count() }}</strong> anak
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="color: var(--text-secondary);">
+            Total Data: <strong>{{ $pendaftarans->count() }}</strong> anak
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{{ route('admin.laporan') }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', ['status' => 'hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
+            <a href="{{ route('admin.laporan', ['status' => 'belum_hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
+        </div>
     </div>
 
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; min-width: 700px;">
+    <!-- Tampilan Desktop (Table Full Width) -->
+    <div class="desktop-view" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; min-width: 800px;">
             <thead>
                 <tr style="background-color: var(--primary-light); color: var(--primary-darker);">
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">No</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kode Reg.</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Jalur</th>
+                    <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kehadiran</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Nama Anak</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Wali & HP</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Waktu Daftar</th>
@@ -43,7 +53,15 @@
                         @endif
                     </td>
                     <td style="padding: 0.75rem 1rem;">
-                        {{ $p->nama_lengkap }}<br>
+                        @if($p->status_kehadiran == 'hadir')
+                            <span style="color: var(--success); font-weight: bold;">HADIR</span><br>
+                            <small style="color: var(--text-muted);">{{ $p->waktu_checkin ? $p->waktu_checkin->format('H:i') : '' }}</small>
+                        @else
+                            <span style="color: var(--danger); font-weight: bold;">BELUM</span>
+                        @endif
+                    </td>
+                    <td style="padding: 0.75rem 1rem;">
+                        <strong>{{ $p->nama_lengkap }}</strong><br>
                         <small style="color: var(--text-muted);">{{ $p->tempat_lahir }}, {{ $p->tanggal_lahir->format('d/m/Y') }}</small>
                     </td>
                     <td style="padding: 0.75rem 1rem;">
@@ -56,11 +74,72 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">Belum ada data pendaftar.</td>
+                    <td colspan="7" style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">Belum ada data pendaftar.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    <!-- Tampilan Mobile (Card View) -->
+    <div class="mobile-view">
+        @forelse($pendaftarans as $index => $p)
+        <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem; background-color: var(--bg-card); position: relative; border-left: 4px solid {{ $p->status_kehadiran == 'hadir' ? 'var(--success)' : 'var(--danger)' }};">
+            <div style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                @if($p->is_umum)
+                    <span style="background-color: var(--warning-light); color: var(--warning); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">UMUM</span>
+                @else
+                    <span style="background-color: var(--success-light); color: var(--success); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">DARELIMAN</span>
+                @endif
+                
+                @if($p->status_kehadiran == 'hadir')
+                    <span style="background-color: var(--success); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">HADIR</span>
+                @else
+                    <span style="background-color: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">BELUM</span>
+                @endif
+            </div>
+            
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">#{{ $index + 1 }} • {{ $p->created_at->format('d/m/Y H:i') }}</div>
+            <div style="font-family: monospace; font-weight: bold; color: var(--primary); font-size: 1rem; margin-bottom: 0.75rem;">{{ $p->kode_registrasi }}</div>
+            
+            <div style="margin-bottom: 0.5rem;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Anak</div>
+                <div style="font-weight: bold;">{{ $p->nama_lengkap }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->tempat_lahir }}, {{ $p->tanggal_lahir->format('d/m/Y') }}</div>
+            </div>
+
+            <div style="margin-bottom: 0;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Wali & HP</div>
+                <div>{{ $p->nama_wali }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->hp_wali }}</div>
+            </div>
+        </div>
+        @empty
+        <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            Belum ada data pendaftar.
+        </div>
+        @endforelse
+    </div>
+
 </div>
 @endsection
+
+@stack('styles')
+<style>
+    /* Desktop Full Width Override */
+    @media (min-width: 1024px) {
+        main.container { max-width: 95% !important; padding: 2rem !important; }
+        .card { max-width: 100% !important; }
+    }
+
+    /* Responsive View Toggles */
+    .mobile-view { display: none; }
+    .desktop-view { display: block; }
+
+    @media (max-width: 768px) {
+        .mobile-view { display: block; }
+        .desktop-view { display: none; }
+        .card { padding: 1rem !important; }
+        .section-title { font-size: 1.1rem; flex-wrap: wrap; }
+    }
+</style>

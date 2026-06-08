@@ -40,11 +40,21 @@ class PendaftaranController extends Controller
     public function processLogin(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $isEmail = filter_var($value, FILTER_VALIDATE_EMAIL);
+                    $isNis   = ctype_digit($value) && strlen($value) >= 4;
+    
+                    if (!$isEmail && !$isNis) {
+                        $fail('Masukkan email yang valid atau NIS (angka).');
+                    }
+                },
+            ],
             'password' => 'required|string',
         ], [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
+            'email.required'   => 'Email atau NIS wajib diisi.',
             'password.required' => 'Password wajib diisi.',
         ]);
 

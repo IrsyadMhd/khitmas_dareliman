@@ -19,16 +19,19 @@ class DarelimanAuthService
     {
         $apiUrl = config('services.dareliman.api_url', 'https://sipdei.dareliman.tech/web_api/app_login');
 
+        // Deteksi apakah input adalah NIS (hanya digit) atau email
+        $isNis = ctype_digit($email);
+        $payload = $isNis
+            ? ['uid' => $email, 'password' => $password] 
+            : ['email' => $email, 'password' => $password];
+
         try {
             $response = Http::timeout(15)
-                ->withHeaders([
-                    'Accept' => '*/*',
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($apiUrl, [
-                    'email' => $email,
-                    'password' => $password,
-                ]);
+            ->withHeaders([
+                'Accept' => '*/*',
+                'Content-Type' => 'application/json',
+            ])
+            ->post($apiUrl, $payload);
 
             // Check if the HTTP request itself was successful
             if (!$response->successful()) {

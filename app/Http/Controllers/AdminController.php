@@ -69,14 +69,22 @@ class AdminController extends Controller
         return back()->with('success', 'Pengaturan berhasil disimpan.');
     }
 
-    public function showLaporan()
+    public function showLaporan(\Illuminate\Http\Request $request)
     {
         if (!session('admin_logged_in')) {
             return redirect()->route('admin.login');
         }
 
-        $pendaftarans = \App\Models\Pendaftaran::orderBy('created_at', 'desc')->get();
-        return view('admin.laporan', compact('pendaftarans'));
+        $query = \App\Models\Pendaftaran::orderBy('created_at', 'desc');
+
+        if ($request->has('status') && in_array($request->status, ['hadir', 'belum_hadir'])) {
+            $query->where('status_kehadiran', $request->status);
+        }
+
+        $pendaftarans = $query->get();
+        $statusFilter = $request->status;
+
+        return view('admin.laporan', compact('pendaftarans', 'statusFilter'));
     }
 
     public function logout()

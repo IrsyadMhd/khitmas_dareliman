@@ -9,7 +9,7 @@
     </h2>
 
     <div class="alert alert-info">
-        Mohon isi data dengan benar. Anda dapat mendaftarkan lebih dari satu anak menggunakan Nomor HP Wali yang sama.
+        Satu alamat email dan nomor telepon yang sama diperbolehkan untuk mendaftarkan lebih dari satu anak. Namun, mohon pastikan nama anak yang didaftarkan tidak boleh sama.
     </div>
 
     <form action="{{ route('umum.daftar.submit') }}" method="POST" id="daftarForm">

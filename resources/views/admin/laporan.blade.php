@@ -23,6 +23,10 @@
             <a href="{{ route('admin.laporan') }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
             <a href="{{ route('admin.laporan', ['status' => 'hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
             <a href="{{ route('admin.laporan', ['status' => 'belum_hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
+            
+            @if(session('admin_role') === 'superadmin')
+            <a href="{{ route('admin.laporan', ['status' => 'ganda']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
+            @endif
         </div>
     </div>
 
@@ -38,6 +42,9 @@
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Nama Anak</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Wali & HP</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Waktu Daftar</th>
+                    @if(session('admin_role') === 'superadmin')
+                    <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -61,7 +68,18 @@
                         @endif
                     </td>
                     <td style="padding: 0.75rem 1rem;">
-                        <strong>{{ $p->nama_lengkap }}</strong><br>
+                        <strong style="display: flex; align-items: center; gap: 0.5rem;">
+                            {{ $p->nama_lengkap }}
+                            @if(session('admin_role') === 'superadmin')
+                                @if($p->duplicate_status === 'red')
+                                    <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--danger); cursor:help;"></span>
+                                @elseif($p->duplicate_status === 'yellow')
+                                    <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--warning); cursor:help;"></span>
+                                @else
+                                    <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--success); cursor:help;"></span>
+                                @endif
+                            @endif
+                        </strong>
                         <small style="color: var(--text-muted);">{{ $p->tempat_lahir }}, {{ $p->tanggal_lahir->format('d/m/Y') }}</small>
                     </td>
                     <td style="padding: 0.75rem 1rem;">
@@ -71,10 +89,19 @@
                     <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">
                         {{ $p->created_at->format('d/m/Y H:i') }}
                     </td>
+                    @if(session('admin_role') === 'superadmin')
+                    <td style="padding: 0.75rem 1rem;">
+                        <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                        </form>
+                    </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">Belum ada data pendaftar.</td>
+                    <td colspan="{{ session('admin_role') === 'superadmin' ? '8' : '7' }}" style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">Belum ada data pendaftar.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -104,7 +131,18 @@
             
             <div style="margin-bottom: 0.5rem;">
                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Anak</div>
-                <div style="font-weight: bold;">{{ $p->nama_lengkap }}</div>
+                <div style="font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
+                    {{ $p->nama_lengkap }}
+                    @if(session('admin_role') === 'superadmin')
+                        @if($p->duplicate_status === 'red')
+                            <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--danger);"></span>
+                        @elseif($p->duplicate_status === 'yellow')
+                            <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--warning);"></span>
+                        @else
+                            <span title="{{ $p->duplicate_reason }}" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--success);"></span>
+                        @endif
+                    @endif
+                </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->tempat_lahir }}, {{ $p->tanggal_lahir->format('d/m/Y') }}</div>
             </div>
 
@@ -113,6 +151,16 @@
                 <div>{{ $p->nama_wali }}</div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->hp_wali }}</div>
             </div>
+
+            @if(session('admin_role') === 'superadmin')
+            <div style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem; text-align: right;">
+                <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold;">Hapus Data</button>
+                </form>
+            </div>
+            @endif
         </div>
         @empty
         <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-sm);">

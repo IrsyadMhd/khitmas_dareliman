@@ -23,9 +23,15 @@ class AdminController extends Controller
     {
         $request->validate(['password' => 'required']);
 
-        // Password statis rahasia
+        // Password Read-only
         if ($request->password === '111213') {
-            session(['admin_logged_in' => true]);
+            session(['admin_logged_in' => true, 'admin_role' => 'readonly']);
+            return redirect()->route('admin.settings');
+        }
+        
+        // Password Superadmin (Bisa Hapus)
+        if ($request->password === '121314') {
+            session(['admin_logged_in' => true, 'admin_role' => 'superadmin']);
             return redirect()->route('admin.settings');
         }
 
@@ -84,12 +90,70 @@ class AdminController extends Controller
         $pendaftarans = $query->get();
         $statusFilter = $request->status;
 
+        if (session('admin_role') === 'superadmin') {
+            $allRecords = \App\Models\Pendaftaran::all();
+            
+            foreach ($pendaftarans as $p) {
+                $p->duplicate_status = 'green';
+                $p->duplicate_reason = 'Aman, tidak ada indikasi ganda.';
+
+                foreach ($allRecords as $other) {
+                    if ($p->id === $other->id) continue;
+
+                    $name1 = strtolower(trim($p->nama_lengkap));
+                    $name2 = strtolower(trim($other->nama_lengkap));
+                    
+                    if ($name1 === $name2) {
+                        if ($p->tanggal_lahir->equalTo($other->tanggal_lahir)) {
+                            $p->duplicate_status = 'red';
+                            $p->duplicate_reason = 'Sangat Identik: Nama & Tanggal Lahir sama persis dengan pendaftar lain.';
+                            break; 
+                        } else {
+                            if ($p->duplicate_status !== 'red') {
+                                $p->duplicate_status = 'yellow';
+                                $p->duplicate_reason = 'Perlu Perhatian: Nama sama persis dengan pendaftar lain, tetapi Tanggal Lahir berbeda.';
+                            }
+                        }
+                    } else {
+                        if ($p->duplicate_status === 'green') {
+                            $words1 = explode(' ', $name1);
+                            $words2 = explode(' ', $name2);
+                            $intersect = array_intersect($words1, $words2);
+                            if (count($intersect) >= 2 && count($words1) > 1 && count($words2) > 1) {
+                                $p->duplicate_status = 'yellow';
+                                $p->duplicate_reason = 'Perlu Perhatian: Nama memiliki kemiripan kata (' . implode(' ', $intersect) . ') dengan pendaftar lain.';
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($request->status === 'ganda') {
+                $pendaftarans = $pendaftarans->filter(function($p) {
+                    return $p->duplicate_status === 'red' || $p->duplicate_status === 'yellow';
+                });
+            }
+        }
+
         return view('admin.laporan', compact('pendaftarans', 'statusFilter'));
+    }
+
+    public function deleteData($id)
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            return back()->with('error', 'Anda tidak memiliki akses untuk menghapus data. Silakan login menggunakan password superadmin.');
+        }
+
+        $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
+        $pendaftar->delete();
+
+        return back()->with('success', 'Data pendaftar berhasil dihapus.');
     }
 
     public function logout()
     {
         session()->forget('admin_logged_in');
+        session()->forget('admin_role');
         return redirect()->route('landing');
     }
 }

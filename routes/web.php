@@ -54,6 +54,7 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
 
     Route::get('/laporan', [\App\Http\Controllers\AdminController::class, 'showLaporan'])->name('laporan');
+    Route::delete('/laporan/{id}', [\App\Http\Controllers\AdminController::class, 'deleteData'])->name('laporan.delete');
     
     Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
 });

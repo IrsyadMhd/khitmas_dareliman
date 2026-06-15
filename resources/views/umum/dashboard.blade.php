@@ -40,6 +40,18 @@
         <p class="small mt-2" style="color: var(--text-secondary); line-height: 1.4;">
             Tunjukkan QR Code ini saat registrasi kehadiran.
         </p>
+        
+        <div style="margin-top: 1rem; margin-bottom: 0.5rem;">
+            <a href="https://whatsapp.com/channel/0029Vb8ZoI4HrDZXhbYLVd2p" target="_blank" class="btn-primary" style="background-color: #25D366; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                Silakan Join Saluran Ini!!
+            </a>
+            
+            <div style="background-color: var(--primary-light); color: var(--primary-dark); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--primary); margin-top: 1rem; font-size: 0.875rem; text-align: left; line-height: 1.4;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: text-bottom; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Silakan ikuti saluran ini untuk mendapatkan informasi resmi dan pembaruan terkini mengenai kegiatan Khitanan Massal 2026.
+            </div>
+        </div>
     </div>
 </div>
 @endforeach

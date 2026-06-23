@@ -17,7 +17,6 @@
     <div style="background: var(--bg-page); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.875rem; color: var(--text-secondary); text-align: left; margin-bottom: 2rem;">
         <p style="margin-top:0;"><strong>Syarat Pendaftaran Khitanan Massal:</strong></p>
         <ul style="margin-bottom:0; padding-left: 1.5rem;">
-            <li>Peserta adalah laki-laki.</li>
             <li>Merupakan siswa internal Dareliman.</li>
             <li>Status siswa aktif.</li>
             <li>Berada pada jenjang pendidikan TAUD, TK, atau SD.</li>

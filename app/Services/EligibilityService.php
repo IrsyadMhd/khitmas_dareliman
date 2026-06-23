@@ -30,15 +30,6 @@ class EligibilityService
      */
     public function checkEligibility(array $user): array
     {
-        // Check 1: Must be male (Laki-laki)
-        $jenisKelamin = $user['jenis_kelamin'] ?? '';
-        if (strtolower($jenisKelamin) !== 'laki-laki') {
-            return [
-                'eligible' => false,
-                'reason' => 'Pendaftaran Khitanan Massal hanya ditujukan untuk peserta laki-laki. Mohon maaf atas ketidaknyamanannya.',
-            ];
-        }
-
         // Check 2: Status must be AKTIF
         $statusAktif = strtoupper($user['status_aktif'] ?? '');
         $statusSiswa = strtoupper($user['status_siswa'] ?? '');

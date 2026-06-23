@@ -37,11 +37,12 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+                <label class="form-label">Jenis Kelamin</label>
                 <select name="jenis_kelamin" class="form-select" required>
-                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                    <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan/Wanita</option>
                 </select>
-                <small class="text-muted mt-1" style="display:block">Hanya untuk peserta Laki-laki.</small>
             </div>
         </div>
 

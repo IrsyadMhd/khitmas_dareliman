@@ -138,16 +138,20 @@ class AdminController extends Controller
         return view('admin.laporan', compact('pendaftarans', 'statusFilter'));
     }
 
-    public function deleteData($id)
+    public function batalHadir($id)
     {
         if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
-            return back()->with('error', 'Anda tidak memiliki akses untuk menghapus data. Silakan login menggunakan password superadmin.');
+            return back()->with('error', 'Anda tidak memiliki akses untuk membatalkan kehadiran. Silakan login menggunakan password superadmin.');
         }
 
         $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
-        $pendaftar->delete();
+        $pendaftar->status_kehadiran = 'belum_hadir';
+        $pendaftar->waktu_checkin = null;
+        $pendaftar->status_hadiah = 'belum';
+        $pendaftar->waktu_ambil_hadiah = null;
+        $pendaftar->save();
 
-        return back()->with('success', 'Data pendaftar berhasil dihapus.');
+        return back()->with('success', 'Status kehadiran berhasil dibatalkan.');
     }
 
     public function showBarcode($id)

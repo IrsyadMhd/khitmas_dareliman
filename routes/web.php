@@ -55,7 +55,7 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
 
     Route::get('/laporan', [\App\Http\Controllers\AdminController::class, 'showLaporan'])->name('laporan');
     Route::get('/laporan/{id}/barcode', [\App\Http\Controllers\AdminController::class, 'showBarcode'])->name('laporan.barcode');
-    Route::delete('/laporan/{id}', [\App\Http\Controllers\AdminController::class, 'deleteData'])->name('laporan.delete');
+    Route::post('/laporan/{id}/batal', [\App\Http\Controllers\AdminController::class, 'batalHadir'])->name('laporan.batal');
     
     Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
 });
@@ -67,6 +67,12 @@ Route::prefix('scan-kehadiran')->name('scanner.')->group(function () {
     
     Route::get('/', [\App\Http\Controllers\CheckinController::class, 'showScanner'])->name('index');
     Route::post('/process', [\App\Http\Controllers\CheckinController::class, 'processScan'])->name('process');
+});
+
+// Scanner Hadiah/Merchandise Panitia
+Route::prefix('scan-hadiah')->name('scanner.hadiah.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CheckinController::class, 'showMerchandiseScanner'])->name('index');
+    Route::post('/process', [\App\Http\Controllers\CheckinController::class, 'processMerchandise'])->name('process');
 });
 
 // Check-in API for event staff (Legacy/Fallback API if needed)

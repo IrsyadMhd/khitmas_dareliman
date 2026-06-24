@@ -43,6 +43,7 @@
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kode Reg.</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Jalur</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kehadiran</th>
+                    <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Hadiah</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Nama Anak</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Wali & HP</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Waktu Daftar</th>
@@ -72,6 +73,14 @@
                         @endif
                     </td>
                     <td style="padding: 0.75rem 1rem;">
+                        @if($p->status_hadiah == 'sudah')
+                            <span style="color: var(--success); font-weight: bold;">✔ DIAMBIL</span><br>
+                            <small style="color: var(--text-muted);">{{ $p->waktu_ambil_hadiah ? $p->waktu_ambil_hadiah->format('H:i') : '' }}</small>
+                        @else
+                            <span style="color: var(--text-muted); font-weight: bold;">BELUM</span>
+                        @endif
+                    </td>
+                    <td style="padding: 0.75rem 1rem;">
                         <strong style="display: flex; align-items: center; gap: 0.5rem;">
                             {{ $p->nama_lengkap }}
                             @if(session('admin_role') === 'superadmin')
@@ -97,11 +106,12 @@
                     <td style="padding: 0.75rem 1rem;">
                         <div style="display: flex; gap: 0.5rem;">
                             <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
-                            <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
+                            @if($p->status_kehadiran === 'hadir')
+                            <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                                <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
                             </form>
+                            @endif
                         </div>
                     </td>
                     @endif
@@ -154,23 +164,35 @@
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-                <div>
-                    @if($p->status_kehadiran == 'hadir')
-                        <span style="color: var(--success); font-weight: bold; font-size: 0.85rem;">HADIR</span>
-                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 0.25rem;">({{ $p->waktu_checkin ? $p->waktu_checkin->format('H:i') : '' }})</span>
-                    @else
-                        <span style="color: var(--danger); font-weight: bold; font-size: 0.85rem;">BELUM HADIR</span>
-                    @endif
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Kehadiran:</span>
+                        @if($p->status_kehadiran == 'hadir')
+                            <span style="color: var(--success); font-weight: bold; font-size: 0.85rem;">HADIR</span>
+                            <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 0.25rem;">({{ $p->waktu_checkin ? $p->waktu_checkin->format('H:i') : '' }})</span>
+                        @else
+                            <span style="color: var(--danger); font-weight: bold; font-size: 0.85rem;">BELUM</span>
+                        @endif
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Hadiah:</span>
+                        @if($p->status_hadiah == 'sudah')
+                            <span style="color: var(--success); font-weight: bold; font-size: 0.85rem;">✔ DIAMBIL</span>
+                        @else
+                            <span style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">BELUM</span>
+                        @endif
+                    </div>
                 </div>
                 
                 @if(session('admin_role') === 'superadmin')
-                <div style="display: flex; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;">
                     <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
-                    <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
+                    @if($p->status_kehadiran === 'hadir')
+                    <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                        <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
                     </form>
+                    @endif
                 </div>
                 @endif
             </div>

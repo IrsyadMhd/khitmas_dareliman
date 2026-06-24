@@ -99,4 +99,74 @@ class CheckinController extends Controller
             ]
         ]);
     }
+
+    public function showMerchandiseScanner()
+    {
+        if (!session('scanner_logged_in')) {
+            return redirect()->route('scanner.login');
+        }
+        
+        $totalHadiah = Pendaftaran::where('status_hadiah', 'sudah')->count();
+        
+        return view('scanner.merchandise', compact('totalHadiah'));
+    }
+
+    public function processMerchandise(Request $request)
+    {
+        if (!session('scanner_logged_in')) {
+            return response()->json(['success' => false, 'message' => 'Sesi habis, silakan refresh halaman dan login kembali.'], 401);
+        }
+
+        $kode = trim($request->input('kode_registrasi'));
+        
+        if (empty($kode)) {
+            return response()->json(['success' => false, 'message' => 'Kode registrasi kosong.']);
+        }
+
+        $pendaftaran = Pendaftaran::where('kode_registrasi', $kode)->first();
+
+        if (!$pendaftaran) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Kode tidak valid atau tidak terdaftar di sistem.'
+            ]);
+        }
+
+        // Syarat 1: Harus sudah check-in (hadir)
+        if ($pendaftaran->status_kehadiran !== 'hadir') {
+            return response()->json([
+                'success' => false,
+                'message' => 'belum checkin',
+                'submessage' => 'Peserta ini belum mendaftar kehadiran di meja depan!'
+            ]);
+        }
+
+        // Syarat 2: Belum ambil hadiah
+        if ($pendaftaran->status_hadiah === 'sudah') {
+            return response()->json([
+                'success' => false,
+                'message' => 'sudah ambil hadiah',
+                'data' => [
+                    'nama' => $pendaftaran->nama_lengkap,
+                    'waktu_ambil' => $pendaftaran->waktu_ambil_hadiah ? $pendaftaran->waktu_ambil_hadiah->format('H:i:s') : null
+                ]
+            ]);
+        }
+
+        // Tandai sudah ambil
+        $pendaftaran->update([
+            'status_hadiah' => 'sudah',
+            'waktu_ambil_hadiah' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'HADIAH BISA DIBERIKAN!',
+            'data' => [
+                'nama' => $pendaftaran->nama_lengkap,
+                'jalur' => $pendaftaran->is_umum ? 'UMUM' : 'DARELIMAN',
+                'kode' => $pendaftaran->kode_registrasi
+            ]
+        ]);
+    }
 }

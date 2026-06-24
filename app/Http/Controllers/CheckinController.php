@@ -95,7 +95,9 @@ class CheckinController extends Controller
             'data' => [
                 'nama' => $pendaftaran->nama_lengkap,
                 'jalur' => $pendaftaran->is_umum ? 'UMUM' : 'DARELIMAN',
-                'kode' => $pendaftaran->kode_registrasi
+                'kode' => $pendaftaran->kode_registrasi,
+                'jadwal_hari' => $pendaftaran->jadwal_hari,
+                'jadwal_jam' => $pendaftaran->jadwal_jam
             ]
         ]);
     }

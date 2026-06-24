@@ -57,6 +57,10 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     Route::get('/laporan/{id}/barcode', [\App\Http\Controllers\AdminController::class, 'showBarcode'])->name('laporan.barcode');
     Route::post('/laporan/{id}/batal', [\App\Http\Controllers\AdminController::class, 'batalHadir'])->name('laporan.batal');
     
+    Route::get('/import-jadwal', [\App\Http\Controllers\AdminController::class, 'showImportJadwal'])->name('importJadwal');
+    Route::post('/import-jadwal', [\App\Http\Controllers\AdminController::class, 'processImportJadwal'])->name('importJadwal.process');
+    Route::get('/migrate-db', [\App\Http\Controllers\AdminController::class, 'runMigration'])->name('migrate');
+    
     Route::get('/logout', [\App\Http\Controllers\AdminController::class, 'logout'])->name('logout');
 });
 

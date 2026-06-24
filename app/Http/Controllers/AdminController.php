@@ -172,4 +172,76 @@ class AdminController extends Controller
         session()->forget('admin_role');
         return redirect()->route('landing');
     }
+
+    public function showImportJadwal()
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            return redirect()->route('admin.login')->with('error', 'Silakan login sebagai superadmin.');
+        }
+
+        return view('admin.import-jadwal');
+    }
+
+    public function processImportJadwal(Request $request)
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'jadwal_data' => 'required|string',
+        ]);
+
+        $lines = explode("\n", trim($request->jadwal_data));
+        $countSuccess = 0;
+        $countNotFound = 0;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) continue;
+
+            $parts = explode("\t", $line);
+            if (count($parts) >= 3) {
+                $siswaId = trim($parts[0]);
+                $hariInput = trim($parts[1]);
+                $jamInput = trim($parts[2]);
+
+                // Mapping hari
+                $hariMapped = $hariInput;
+                if (strtolower($hariInput) === 'kamis') {
+                    $hariMapped = 'Kamis, 25/06/2026';
+                } elseif (strtolower($hariInput) === 'jumaat' || strtolower($hariInput) === 'jum\'at' || strtolower($hariInput) === 'jumat') {
+                    $hariMapped = 'Jumat, 26/06/2026';
+                }
+
+                $updated = \App\Models\Pendaftaran::where('siswa_id', $siswaId)->update([
+                    'jadwal_hari' => $hariMapped,
+                    'jadwal_jam' => $jamInput
+                ]);
+
+                if ($updated) {
+                    $countSuccess++;
+                } else {
+                    $countNotFound++;
+                }
+            }
+        }
+
+        return redirect()->route('admin.importJadwal')->with('success', "Selesai! Berhasil update jadwal untuk $countSuccess peserta. (Gagal / Tidak ditemukan: $countNotFound)");
+    }
+
+    public function runMigration()
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            abort(403);
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return back()->with('success', 'Migrasi database berhasil dijalankan di server production! Output: ' . $output);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menjalankan migrasi: ' . $e->getMessage());
+        }
+    }
 }

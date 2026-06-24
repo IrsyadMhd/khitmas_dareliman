@@ -36,6 +36,11 @@
 
         <!-- Kamera HP (Html5Qrcode) -->
         <div style="background: #000; border-radius: var(--radius-sm); overflow: hidden; position: relative; min-height: 300px;">
+            <!-- Tombol Switch Kamera (Posisi Kanan Atas) -->
+            <button type="button" onclick="switchCamera()" style="position: absolute; top: 10px; right: 10px; z-index: 5; background: rgba(0,0,0,0.5); color: white; border: 1px solid white; padding: 0.5rem 0.75rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                Ganti Kamera
+            </button>
             <div id="reader" style="width: 100%; border: none; min-height: 300px;"></div>
             <div id="cameraOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10;">
                 <button onclick="startCamera()" class="btn-primary" style="background: var(--warning); border-color: var(--warning); cursor: pointer; padding: 1rem 2rem; font-size: 1.1rem;">
@@ -57,35 +62,28 @@
 </style>
 
 @stack('scripts')
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Pustaka Html5Qrcode dari CDN -->
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
     let isProcessing = false;
     let html5QrcodeScanner = null;
 
-    function showAlert(type, title, message, submessage = '') {
-        const area = document.getElementById('alertArea');
-        const titleEl = document.getElementById('alertTitle');
-        const msgEl = document.getElementById('alertMessage');
-        const subMsgEl = document.getElementById('alertSubMessage');
-
-        area.style.display = 'block';
-        titleEl.innerText = title;
-        msgEl.innerText = message;
-        subMsgEl.innerText = submessage;
-
-        if (type === 'success') {
-            area.style.backgroundColor = 'var(--success-light)';
-            area.style.color = 'var(--success)';
-            area.style.border = '2px solid var(--success)';
-            
-            // Increment counter
-            const counter = document.getElementById('counterHadir');
-            counter.innerText = parseInt(counter.innerText) + 1;
-        } else if (type === 'error') {
-            area.style.backgroundColor = 'var(--danger-light)';
-            area.style.color = 'var(--danger)';
-            area.style.border = '2px solid var(--danger)';
+    // Fungsi tambahan untuk tombol Switch Kamera
+    function switchCamera() {
+        const selectBox = document.getElementById('html5-qrcode-select-camera');
+        if (selectBox && selectBox.options.length > 1) {
+            let currentIndex = selectBox.selectedIndex;
+            let nextIndex = (currentIndex + 1) % selectBox.options.length;
+            selectBox.selectedIndex = nextIndex;
+            selectBox.dispatchEvent(new Event('change'));
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                text: 'Hanya ada 1 kamera yang terdeteksi di perangkat ini.'
+            });
         }
     }
 
@@ -93,8 +91,10 @@
         if (isProcessing) return;
         isProcessing = true;
 
-        // Hide alert temporarily
-        document.getElementById('alertArea').style.display = 'none';
+        // Freeze camera if scanning
+        if (html5QrcodeScanner) {
+            try { html5QrcodeScanner.pause(); } catch(e) {}
+        }
 
         try {
             const response = await fetch('{{ route("scanner.hadiah.process") }}', {
@@ -112,22 +112,58 @@
             document.getElementById('manualInput').value = '';
 
             if (data.success) {
-                // Play success sound (optional)
-                showAlert('success', '🎁 SILAKAN BERIKAN HADIAH!', data.message, data.data.nama + ' (' + data.data.jalur + ')');
+                // Increment counter
+                const counter = document.getElementById('counterHadir');
+                counter.innerText = parseInt(counter.innerText) + 1;
+
+                await Swal.fire({
+                    title: '🎁 SILAKAN BERIKAN HADIAH!',
+                    html: `<b>Nama:</b> ${data.data.nama}<br><b>Jalur:</b> ${data.data.jalur}`,
+                    icon: 'success',
+                    confirmButtonText: 'Lanjut Scan',
+                    confirmButtonColor: 'var(--success)'
+                });
             } else {
                 if (data.message === 'sudah ambil hadiah') {
-                    showAlert('error', '❌ SUDAH DIAMBIL', 'Peserta ini SUDAH MENGAMBIL HADIAH sebelumnya!', 'Nama: ' + (data.data ? data.data.nama : '') + (data.data && data.data.waktu_ambil ? ' (Jam: ' + data.data.waktu_ambil + ')' : ''));
+                    await Swal.fire({
+                        title: '❌ SUDAH DIAMBIL',
+                        html: `Peserta ini SUDAH MENGAMBIL HADIAH sebelumnya!<br><br><b>Nama:</b> ${data.data ? data.data.nama : '-'}<br><b>Jam Ambil:</b> ${data.data && data.data.waktu_ambil ? data.data.waktu_ambil : '-'}`,
+                        icon: 'error',
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: 'var(--danger)'
+                    });
                 } else if (data.message === 'belum checkin') {
-                    showAlert('error', '⚠️ BELUM CHECK-IN', data.submessage, 'Minta peserta lapor ke meja depan dahulu.');
+                    await Swal.fire({
+                        title: '⚠️ BELUM CHECK-IN',
+                        text: data.submessage + ' Minta peserta lapor ke meja depan dahulu.',
+                        icon: 'warning',
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: 'var(--warning)'
+                    });
                 } else {
-                    showAlert('error', '❌ ERROR', data.message);
+                    await Swal.fire({
+                        title: '❌ ERROR',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: 'var(--danger)'
+                    });
                 }
             }
         } catch (error) {
-            showAlert('error', '❌ KONEKSI GAGAL', 'Tidak dapat menghubungi server. Periksa jaringan Anda.');
+            await Swal.fire({
+                title: '❌ KONEKSI GAGAL',
+                text: 'Tidak dapat menghubungi server. Periksa jaringan Anda.',
+                icon: 'error',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: 'var(--danger)'
+            });
         } finally {
             isProcessing = false;
-            // Refocus to input for next scan
+            // Resume camera if scanning
+            if (html5QrcodeScanner) {
+                try { html5QrcodeScanner.resume(); } catch(e) {}
+            }
             document.getElementById('manualInput').focus();
         }
     }

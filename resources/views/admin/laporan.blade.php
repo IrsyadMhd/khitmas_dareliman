@@ -42,6 +42,7 @@
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">No</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kode Reg.</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Jalur</th>
+                    <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Jadwal</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Kehadiran</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Hadiah</th>
                     <th style="padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);">Nama Anak</th>
@@ -63,6 +64,10 @@
                         @else
                             <span style="background-color: var(--success-light); color: var(--success); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">DARELIMAN</span>
                         @endif
+                    </td>
+                    <td style="padding: 0.75rem 1rem; font-weight: bold; font-size: 0.8rem; white-space: nowrap;">
+                        {{ $p->jadwal_hari ? $p->jadwal_hari : '-' }}<br>
+                        <span style="color: var(--primary);">{{ $p->jadwal_jam ? $p->jadwal_jam : '-' }}</span>
                     </td>
                     <td style="padding: 0.75rem 1rem;">
                         @if($p->status_kehadiran == 'hadir')

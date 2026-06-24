@@ -9,6 +9,7 @@
             Pengaturan Pendaftaran
         </h2>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+            <a href="{{ route('admin.importJadwal') }}" class="btn-primary" style="background: var(--text-muted); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Import Jadwal</a>
             <a href="{{ route('scanner.hadiah.index') }}" target="_blank" class="btn-primary" style="background: var(--primary); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Scanner Hadiah</a>
             <a href="{{ route('scanner.index') }}" target="_blank" class="btn-primary" style="background: var(--warning); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Scanner Hadir</a>
             <a href="{{ route('admin.laporan') }}" class="btn-primary" style="background: var(--success); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Laporan Data</a>
@@ -77,6 +78,13 @@
 
         <button type="submit" class="btn-primary btn-block">Simpan Pengaturan</button>
     </form>
+
+    <!-- Sistem Migrasi Production -->
+    <div style="margin-top: 3rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1rem;">
+        <p class="text-muted small" style="margin-bottom: 0.5rem;">Sistem Database Production:</p>
+        <a href="{{ route('admin.migrate') }}" class="text-muted small" style="text-decoration: underline;" onclick="return confirm('Jalankan migrasi database di server production? Pastikan kode sudah diperbarui.')">Klik di sini untuk sinkronisasi/update kolom Database</a>
+    </div>
+
 </div>
 @endsection
 

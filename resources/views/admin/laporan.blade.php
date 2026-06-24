@@ -325,7 +325,7 @@
         document.getElementById('jadwal_jam').value = jam || '';
         
         let form = document.getElementById('jadwalForm');
-        form.action = '/laporan/' + id + '/jadwal';
+        form.action = '/panel-rahasia/laporan/' + id + '/jadwal';
     }
 
     function closeJadwalModal() {

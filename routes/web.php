@@ -58,6 +58,7 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     Route::post('/laporan/{id}/batal', [\App\Http\Controllers\AdminController::class, 'batalHadir'])->name('laporan.batal');
     Route::delete('/laporan/{id}/hapus', [\App\Http\Controllers\AdminController::class, 'hapusData'])->name('laporan.hapus');
     Route::post('/laporan/{id}/jadwal', [\App\Http\Controllers\AdminController::class, 'updateJadwal'])->name('laporan.jadwal');
+    Route::post('/laporan/{id}/tandai-pesan', [\App\Http\Controllers\AdminController::class, 'tandaiPesan'])->name('laporan.tandai_pesan');
     
     Route::get('/import-jadwal', [\App\Http\Controllers\AdminController::class, 'showImportJadwal'])->name('importJadwal');
     Route::post('/import-jadwal', [\App\Http\Controllers\AdminController::class, 'processImportJadwal'])->name('importJadwal.process');

@@ -21,6 +21,7 @@
         
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <a href="{{ route('admin.laporan') }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', ['status' => 'belum_pesan']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_pesan' ? 'background: #25D366; border: 1px solid #25D366;' : 'background: white; color: #25D366; border: 1px solid #25D366;' }}">Belum Di-WA</a>
             <a href="{{ route('admin.laporan', ['status' => 'hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
             <a href="{{ route('admin.laporan', ['status' => 'belum_hadir']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
             
@@ -126,20 +127,18 @@
                                 if (str_starts_with($waNumber, '0')) { $waNumber = '62' . substr($waNumber, 1); }
                                 $waUrl = "https://wa.me/{$waNumber}?text=" . urlencode($waText);
                             @endphp
-                            <a href="{{ $waUrl }}" target="_blank" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; text-decoration: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center;">Pesan</a>
+                            <button type="button" onclick="kirimPesan(this, '{{ $p->id }}', '{{ $waUrl }}')" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center;">Pesan</button>
                             @if($p->status_kehadiran === 'hadir')
                             <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                                 @csrf
                                 <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
                             </form>
                             @endif
-                            @if($statusFilter === 'ganda')
                             <form action="{{ route('admin.laporan.hapus', $p->id) }}" method="POST" onsubmit="return confirm('HAPUS PERMANEN: Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }} secara permanen?');" style="margin: 0;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
                             </form>
-                            @endif
                         </div>
                     </td>
                     @endif
@@ -230,20 +229,18 @@
                         if (str_starts_with($waNumberMobile, '0')) { $waNumberMobile = '62' . substr($waNumberMobile, 1); }
                         $waUrlMobile = "https://wa.me/{$waNumberMobile}?text=" . urlencode($waTextMobile);
                     @endphp
-                    <a href="{{ $waUrlMobile }}" target="_blank" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; text-decoration: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5rem; margin-bottom: 0.5rem;">Kirim Pesan WA</a>
+                    <button type="button" onclick="kirimPesan(this, '{{ $p->id }}', '{{ $waUrlMobile }}')" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5rem; margin-bottom: 0.5rem;">Kirim Pesan WA</button>
                     @if($p->status_kehadiran === 'hadir')
                     <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                         @csrf
                         <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
                     </form>
                     @endif
-                    @if($statusFilter === 'ganda')
                     <form action="{{ route('admin.laporan.hapus', $p->id) }}" method="POST" onsubmit="return confirm('HAPUS PERMANEN: Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }} secara permanen?');" style="margin: 0;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
                     </form>
-                    @endif
                 </div>
                 @endif
             </div>
@@ -297,6 +294,29 @@
 
 @push('scripts')
 <script>
+    async function kirimPesan(btn, id, url) {
+        try {
+            await fetch(`/panel-rahasia/laporan/${id}/tandai-pesan`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+            window.open(url, '_blank');
+            // If in "belum pesan" tab, remove the row visually so it disappears
+            @if($statusFilter === 'belum_pesan')
+                const tr = btn.closest('tr');
+                if (tr) tr.remove();
+                const card = btn.closest('.card');
+                if (card) card.remove();
+            @endif
+        } catch (error) {
+            console.error('Error marking as sent:', error);
+            window.open(url, '_blank');
+        }
+    }
+
     function showJadwalModal(id, nama, hari, jam) {
         document.getElementById('jadwalModal').style.display = 'flex';
         document.getElementById('jadwalModalTitle').innerText = 'Input Jadwal: ' + nama;

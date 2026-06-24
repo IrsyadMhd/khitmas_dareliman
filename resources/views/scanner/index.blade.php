@@ -91,11 +91,37 @@
     async function sendScanData(kode) {
         if (isProcessing) return;
         isProcessing = true;
+        await submitKode(kode);
+    }
 
-        // Freeze camera if scanning
-        if (html5QrcodeScanner) {
-            try { html5QrcodeScanner.pause(); } catch(e) {}
+    async function submitKode(kode) {
+        const input = document.getElementById('manualInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusBox = document.getElementById('statusBox');
+
+        if (!kode) return;
+
+        isScanning = false;
+        if (html5QrCode && html5QrCode.isScanning) {
+            try {
+                await html5QrCode.pause();
+            } catch (e) {
+                console.log('Error pausing scanner:', e);
+            }
         }
+
+        input.disabled = true;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading"></span> Memproses...';
+        statusBox.innerHTML = '<div style="color: var(--warning);">⏳ Memproses data...</div>';
+
+        await performCheckin(kode);
+    }
+
+    async function performCheckin(kode, confirmOverride = false) {
+        const input = document.getElementById('manualInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusBox = document.getElementById('statusBox');
 
         try {
             const response = await fetch('{{ route("scanner.process") }}', {
@@ -104,16 +130,37 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ kode_registrasi: kode })
+                body: JSON.stringify({ kode_registrasi: kode, confirm_override: confirmOverride })
             });
 
             const data = await response.json();
 
-            // Clear input
+            if (data.requires_confirmation) {
+                const confirmResult = await Swal.fire({
+                    title: '⚠️ PERINGATAN JADWAL',
+                    html: `<b>Nama:</b> ${data.data.nama}<br><br><span style="color: var(--danger); font-size: 1.1rem; font-weight: bold;">${data.warning_message}</span><br><br>Apakah Anda ingin tetap menyimpan absensi kehadiran ini?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lanjutkan Check-In',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: 'var(--success)',
+                    cancelButtonColor: 'var(--danger)',
+                    reverseButtons: true
+                });
+
+                if (confirmResult.isConfirmed) {
+                    await performCheckin(kode, true);
+                    return;
+                } else {
+                    statusBox.innerHTML = '<div style="color: var(--text-muted);">Check-in dibatalkan karena tidak sesuai jadwal.</div>';
+                    resumeScanner();
+                    return;
+                }
+            }
+
             document.getElementById('manualInput').value = '';
 
             if (data.success) {
-                // Increment counter
                 const counter = document.getElementById('counterHadir');
                 counter.innerText = parseInt(counter.innerText) + 1;
 
@@ -130,35 +177,54 @@
                         title: '❌ SUDAH SCAN',
                         html: `Peserta ini sudah absen kehadiran sebelumnya!<br><br><b>Nama:</b> ${data.data ? data.data.nama : '-'}<br><b>Jam Absen:</b> ${data.data && data.data.waktu_checkin ? data.data.waktu_checkin : '-'}`,
                         icon: 'error',
-                        confirmButtonText: 'Tutup',
-                        confirmButtonColor: 'var(--danger)'
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: 'var(--primary)'
                     });
                 } else {
                     await Swal.fire({
-                        title: '❌ ERROR',
+                        title: '❌ GAGAL',
                         text: data.message,
                         icon: 'error',
-                        confirmButtonText: 'Tutup',
-                        confirmButtonColor: 'var(--danger)'
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: 'var(--primary)'
                     });
                 }
             }
+
+            statusBox.innerHTML = '<div style="color: var(--success);">Menunggu scan berikutnya...</div>';
+
         } catch (error) {
+            console.error('Error:', error);
             await Swal.fire({
-                title: '❌ KONEKSI GAGAL',
-                text: 'Tidak dapat menghubungi server. Periksa jaringan Anda.',
+                title: 'Kesalahan Sistem',
+                text: 'Terjadi kesalahan saat menghubungi server.',
                 icon: 'error',
-                confirmButtonText: 'Tutup',
-                confirmButtonColor: 'var(--danger)'
+                confirmButtonText: 'OK',
+                confirmButtonColor: 'var(--primary)'
             });
+            statusBox.innerHTML = '<div style="color: var(--danger);">Gagal memproses data.</div>';
         } finally {
-            isProcessing = false;
-            // Resume camera if scanning
-            if (html5QrcodeScanner) {
-                try { html5QrcodeScanner.resume(); } catch(e) {}
-            }
-            document.getElementById('manualInput').focus();
+            resumeScanner();
         }
+    }
+
+    function resumeScanner() {
+        const input = document.getElementById('manualInput');
+        const submitBtn = document.getElementById('submitBtn');
+        input.disabled = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Proses';
+        input.focus();
+
+        if (html5QrCode && html5QrCode.isPaused()) {
+            try {
+                html5QrCode.resume();
+            } catch (e) {
+                console.log('Error resuming scanner:', e);
+            }
+        }
+        isScanning = true;
+        isProcessing = false;
     }
 
     function handleManualScan(e) {

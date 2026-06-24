@@ -83,6 +83,51 @@ class CheckinController extends Controller
             ]);
         }
 
+        // Pengecekan kesesuaian jadwal
+        if (!$request->input('confirm_override')) {
+            $isWrongSchedule = false;
+            $warningMessage = '';
+
+            if ($pendaftaran->jadwal_hari) {
+                // Cek tanggal jika format mengandung DD/MM/YYYY
+                preg_match('/(\d{2}\/\d{2}\/\d{4})/', $pendaftaran->jadwal_hari, $matches);
+                if (!empty($matches)) {
+                    $scheduledDate = $matches[1];
+                    $todayDate = now()->format('d/m/Y');
+                    
+                    if ($scheduledDate !== $todayDate) {
+                        $isWrongSchedule = true;
+                        $warningMessage = 'HARI TIDAK SESUAI! Jadwal peserta ini adalah ' . $pendaftaran->jadwal_hari . ' jam ' . ($pendaftaran->jadwal_jam ?: '-') . '.';
+                    } else if ($pendaftaran->jadwal_jam) {
+                        preg_match('/(\d{2})[.:]/', $pendaftaran->jadwal_jam, $jamMatches);
+                        if (!empty($jamMatches)) {
+                            $scheduledHour = (int) $jamMatches[1];
+                            $currentHour = (int) now()->format('H');
+                            
+                            // Toleransi kedatangan: boleh beda 1 jam (misal jadwal 09.00, datang jam 08.xx - 10.xx tidak masalah)
+                            if (abs($currentHour - $scheduledHour) > 1) {
+                                $isWrongSchedule = true;
+                                $warningMessage = 'JAM TIDAK SESUAI! Jadwal peserta ini adalah jam ' . $pendaftaran->jadwal_jam . '. Sekarang jam ' . now()->format('H:i') . '.';
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($isWrongSchedule) {
+                return response()->json([
+                    'success' => false,
+                    'requires_confirmation' => true,
+                    'warning_message' => $warningMessage,
+                    'data' => [
+                        'nama' => $pendaftaran->nama_lengkap,
+                        'jadwal_hari' => $pendaftaran->jadwal_hari,
+                        'jadwal_jam' => $pendaftaran->jadwal_jam
+                    ]
+                ]);
+            }
+        }
+
         // Tandai hadir
         $pendaftaran->update([
             'status_kehadiran' => 'hadir',

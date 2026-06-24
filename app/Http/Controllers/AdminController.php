@@ -84,13 +84,17 @@ class AdminController extends Controller
         }
 
         $query = \App\Models\Pendaftaran::orderBy('created_at', 'desc');
+        $statusFilter = $request->status;
 
-        if ($request->has('status') && in_array($request->status, ['hadir', 'belum_hadir'])) {
-            $query->where('status_kehadiran', $request->status);
+        if ($statusFilter === 'hadir') {
+            $query->where('status_kehadiran', 'hadir');
+        } elseif ($statusFilter === 'belum_hadir') {
+            $query->where('status_kehadiran', 'belum_hadir');
+        } elseif ($statusFilter === 'belum_pesan') {
+            $query->where('is_pesan_dikirim', false);
         }
 
         $pendaftarans = $query->get();
-        $statusFilter = $request->status;
 
         if (session('admin_role') === 'superadmin') {
             $allRecords = \App\Models\Pendaftaran::all();
@@ -130,9 +134,9 @@ class AdminController extends Controller
                 }
             }
 
-            if ($request->status === 'ganda') {
+            if ($statusFilter === 'ganda') {
                 $pendaftarans = $pendaftarans->filter(function($p) {
-                    return $p->duplicate_status === 'red' || $p->duplicate_status === 'yellow';
+                    return in_array($p->duplicate_status, ['red', 'yellow']);
                 });
             }
         }
@@ -165,7 +169,7 @@ class AdminController extends Controller
         $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
         $pendaftar->delete();
 
-        return back()->with('success', 'Data pendaftaran ganda berhasil dihapus secara permanen.');
+        return back()->with('success', 'Data pendaftaran berhasil dihapus secara permanen.');
     }
 
     public function updateJadwal(Request $request, $id)
@@ -185,6 +189,19 @@ class AdminController extends Controller
         $pendaftar->save();
 
         return back()->with('success', 'Jadwal peserta berhasil diperbarui.');
+    }
+
+    public function tandaiPesan($id)
+    {
+        if (!session('admin_logged_in')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
+        $pendaftar->is_pesan_dikirim = true;
+        $pendaftar->save();
+
+        return response()->json(['success' => true]);
     }
 
     public function showBarcode($id)

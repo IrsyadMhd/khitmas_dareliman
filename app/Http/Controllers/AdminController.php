@@ -150,6 +150,18 @@ class AdminController extends Controller
         return back()->with('success', 'Data pendaftar berhasil dihapus.');
     }
 
+    public function showBarcode($id)
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $pendaftaran = \App\Models\Pendaftaran::findOrFail($id);
+        $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(250)->margin(4)->generate($pendaftaran->kode_registrasi);
+        
+        return response($svg)->header('Content-Type', 'image/svg+xml');
+    }
+
     public function logout()
     {
         session()->forget('admin_logged_in');

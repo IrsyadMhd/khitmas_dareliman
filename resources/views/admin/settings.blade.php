@@ -9,6 +9,7 @@
             Pengaturan Pendaftaran
         </h2>
         <div>
+            <a href="{{ route('scanner.index') }}" target="_blank" class="btn-primary" style="background: var(--warning); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Buka Scanner</a>
             <a href="{{ route('admin.laporan') }}" class="btn-primary" style="background: var(--success); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Lihat Laporan Data</a>
             <a href="{{ route('admin.logout') }}" class="btn-primary" style="background: var(--danger); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Keluar</a>
         </div>

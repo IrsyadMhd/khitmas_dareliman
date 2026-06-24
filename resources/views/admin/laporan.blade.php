@@ -28,6 +28,10 @@
             <a href="{{ route('admin.laporan', ['status' => 'ganda']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
             @endif
         </div>
+
+        <div style="flex-grow: 1; max-width: 300px; min-width: 200px;">
+            <input type="text" id="searchInput" onkeyup="filterLaporan()" class="form-input" placeholder="Cari nama, hp, kode..." style="padding: 0.5rem 1rem; border-radius: 20px;">
+        </div>
     </div>
 
     <!-- Tampilan Desktop (Table Full Width) -->
@@ -49,7 +53,7 @@
             </thead>
             <tbody>
                 @forelse($pendaftarans as $index => $p)
-                <tr style="border-bottom: 1px solid var(--border);">
+                <tr class="laporan-row" data-search="{{ strtolower($p->nama_lengkap . ' ' . $p->kode_registrasi . ' ' . $p->nama_wali . ' ' . $p->hp_wali . ' ' . $p->email) }}" style="border-bottom: 1px solid var(--border);">
                     <td style="padding: 0.75rem 1rem;">{{ $index + 1 }}</td>
                     <td style="padding: 0.75rem 1rem; font-family: monospace; font-weight: bold; color: var(--primary);">{{ $p->kode_registrasi }}</td>
                     <td style="padding: 0.75rem 1rem;">
@@ -91,11 +95,14 @@
                     </td>
                     @if(session('admin_role') === 'superadmin')
                     <td style="padding: 0.75rem 1rem;">
-                        <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
-                        </form>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
+                            <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                            </form>
+                        </div>
                     </td>
                     @endif
                 </tr>
@@ -110,24 +117,18 @@
 
     <!-- Tampilan Mobile (Card View) -->
     <div class="mobile-view">
-        @forelse($pendaftarans as $index => $p)
-        <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem; background-color: var(--bg-card); position: relative; border-left: 4px solid {{ $p->status_kehadiran == 'hadir' ? 'var(--success)' : 'var(--danger)' }};">
-            <div style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
-                @if($p->is_umum)
-                    <span style="background-color: var(--warning-light); color: var(--warning); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">UMUM</span>
-                @else
-                    <span style="background-color: var(--success-light); color: var(--success); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">DARELIMAN</span>
-                @endif
-                
-                @if($p->status_kehadiran == 'hadir')
-                    <span style="background-color: var(--success); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">HADIR</span>
-                @else
-                    <span style="background-color: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">BELUM</span>
-                @endif
+        @forelse($pendaftarans as $p)
+        <div class="card laporan-card" data-search="{{ strtolower($p->nama_lengkap . ' ' . $p->kode_registrasi . ' ' . $p->nama_wali . ' ' . $p->hp_wali . ' ' . $p->email) }}" style="margin-bottom: 1rem; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                <div style="font-family: monospace; font-weight: bold; color: var(--primary); font-size: 1.1rem;">{{ $p->kode_registrasi }}</div>
+                <div>
+                    @if($p->is_umum)
+                        <span style="background-color: var(--warning-light); color: var(--warning); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">UMUM</span>
+                    @else
+                        <span style="background-color: var(--success-light); color: var(--success); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">DARELIMAN</span>
+                    @endif
+                </div>
             </div>
-            
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">#{{ $index + 1 }} • {{ $p->created_at->format('d/m/Y H:i') }}</div>
-            <div style="font-family: monospace; font-weight: bold; color: var(--primary); font-size: 1rem; margin-bottom: 0.75rem;">{{ $p->kode_registrasi }}</div>
             
             <div style="margin-bottom: 0.5rem;">
                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Anak</div>
@@ -146,21 +147,33 @@
                 <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->tempat_lahir }}, {{ $p->tanggal_lahir->format('d/m/Y') }}</div>
             </div>
 
-            <div style="margin-bottom: 0;">
-                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Wali & HP</div>
-                <div>{{ $p->nama_wali }}</div>
+            <div style="margin-bottom: 0.5rem;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Wali & Kontak</div>
+                <div style="font-weight: 500;">{{ $p->nama_wali }}</div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">{{ $p->hp_wali }}</div>
             </div>
 
-            @if(session('admin_role') === 'superadmin')
-            <div style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem; text-align: right;">
-                <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold;">Hapus Data</button>
-                </form>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <div>
+                    @if($p->status_kehadiran == 'hadir')
+                        <span style="color: var(--success); font-weight: bold; font-size: 0.85rem;">HADIR</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 0.25rem;">({{ $p->waktu_checkin ? $p->waktu_checkin->format('H:i') : '' }})</span>
+                    @else
+                        <span style="color: var(--danger); font-weight: bold; font-size: 0.85rem;">BELUM HADIR</span>
+                    @endif
+                </div>
+                
+                @if(session('admin_role') === 'superadmin')
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
+                    <form action="{{ route('admin.laporan.delete', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }}?');" style="margin: 0;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                    </form>
+                </div>
+                @endif
             </div>
-            @endif
         </div>
         @empty
         <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-sm);">
@@ -169,7 +182,79 @@
         @endforelse
     </div>
 
+    <!-- Modal Barcode -->
+    <div id="barcodeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 8px; text-align: center; max-width: 100%; width: 400px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <button onclick="closeBarcodeModal()" style="position: absolute; top: 10px; right: 15px; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            <h3 style="margin-top: 0; color: var(--primary);">Barcode Kehadiran</h3>
+            <p id="modalKode" style="font-family: monospace; font-weight: bold; font-size: 1.2rem; color: var(--primary);"></p>
+            
+            <div id="barcodeLoading" style="padding: 2rem; color: var(--text-muted);">Memuat Barcode...</div>
+            <div id="barcodeImgContainer" style="display: none; margin-bottom: 1rem;"></div>
+            
+            <p id="modalNama" style="margin-bottom: 0; font-weight: bold;"></p>
+        </div>
+    </div>
+
 </div>
+@push('scripts')
+<script>
+    function showBarcodeModal(id, kode, nama) {
+        document.getElementById('modalKode').innerText = kode;
+        document.getElementById('modalNama').innerText = nama;
+        document.getElementById('barcodeModal').style.display = 'flex';
+        
+        const imgContainer = document.getElementById('barcodeImgContainer');
+        const loading = document.getElementById('barcodeLoading');
+        
+        imgContainer.style.display = 'none';
+        loading.style.display = 'block';
+        imgContainer.innerHTML = '';
+        
+        fetch(`/panel-rahasia/laporan/${id}/barcode`)
+            .then(response => response.text())
+            .then(svg => {
+                imgContainer.innerHTML = svg;
+                loading.style.display = 'none';
+                imgContainer.style.display = 'block';
+            })
+            .catch(err => {
+                loading.innerText = 'Gagal memuat barcode.';
+            });
+    }
+
+    function closeBarcodeModal() {
+        document.getElementById('barcodeModal').style.display = 'none';
+    }
+
+    function filterLaporan() {
+        let input = document.getElementById('searchInput');
+        let filter = input.value.toLowerCase();
+
+        // Desktop rows
+        let rows = document.querySelectorAll('.laporan-row');
+        rows.forEach(row => {
+            let searchData = row.getAttribute('data-search') || '';
+            if (searchData.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Mobile cards
+        let cards = document.querySelectorAll('.laporan-card');
+        cards.forEach(card => {
+            let searchData = card.getAttribute('data-search') || '';
+            if (searchData.includes(filter)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+@endpush
 @endsection
 
 @stack('styles')

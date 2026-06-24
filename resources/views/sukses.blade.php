@@ -14,7 +14,7 @@
         <div class="kode-badge">{{ $pendaftaran->kode_registrasi }}</div>
         
         <div style="background: white; padding: 1rem; display: inline-block; border-radius: 8px;">
-            {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate($pendaftaran->kode_registrasi) !!}
+            {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->margin(4)->generate($pendaftaran->kode_registrasi) !!}
         </div>
         
         <p class="small mt-4" style="color: var(--text-secondary); line-height: 1.4;">

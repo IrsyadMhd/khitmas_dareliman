@@ -310,8 +310,8 @@ class PendaftaranController extends Controller
 
         if ($pendaftaran->status_kehadiran === 'hadir') {
             return response()->json([
-                'success' => true,
-                'message' => 'Peserta sudah di-check-in sebelumnya.',
+                'success' => false,
+                'message' => 'sudah scand barcode kehadiran',
                 'data' => [
                     'nama' => $pendaftaran->nama_lengkap,
                     'jenjang' => $pendaftaran->jenjang,

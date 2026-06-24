@@ -35,10 +35,10 @@
         </div>
 
         <!-- Kamera HP (Html5Qrcode) -->
-        <div style="background: #000; border-radius: var(--radius-sm); overflow: hidden; position: relative;">
-            <div id="reader" style="width: 100%; border: none;"></div>
+        <div style="background: #000; border-radius: var(--radius-sm); overflow: hidden; position: relative; min-height: 300px;">
+            <div id="reader" style="width: 100%; border: none; min-height: 300px;"></div>
             <div id="cameraOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10;">
-                <button onclick="startCamera()" class="btn-primary" style="background: var(--success);">
+                <button onclick="startCamera()" class="btn-primary" style="background: var(--success); cursor: pointer; padding: 1rem 2rem; font-size: 1.1rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     Buka Kamera HP
                 </button>
@@ -142,7 +142,16 @@
     function startCamera() {
         document.getElementById('cameraOverlay').style.display = 'none';
         html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: { width: 250, height: 250 }, rememberLastUsedCamera: true }, false
+            "reader", { 
+                fps: 5, 
+                qrbox: { width: 300, height: 300 }, 
+                rememberLastUsedCamera: true,
+                formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ],
+                videoConstraints: {
+                    width: { min: 640, ideal: 1280 },
+                    height: { min: 480, ideal: 720 }
+                }
+            }, false
         );
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     }

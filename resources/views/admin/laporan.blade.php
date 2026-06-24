@@ -117,6 +117,13 @@
                                 <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
                             </form>
                             @endif
+                            @if($statusFilter === 'ganda')
+                            <form action="{{ route('admin.laporan.hapus', $p->id) }}" method="POST" onsubmit="return confirm('HAPUS PERMANEN: Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }} secara permanen?');" style="margin: 0;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
+                            </form>
+                            @endif
                         </div>
                     </td>
                     @endif
@@ -196,6 +203,13 @@
                     <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                         @csrf
                         <button type="submit" style="background: var(--warning); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Batal Hadir</button>
+                    </form>
+                    @endif
+                    @if($statusFilter === 'ganda')
+                    <form action="{{ route('admin.laporan.hapus', $p->id) }}" method="POST" onsubmit="return confirm('HAPUS PERMANEN: Apakah Anda yakin ingin menghapus data {{ $p->nama_lengkap }} secara permanen?');" style="margin: 0;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Hapus</button>
                     </form>
                     @endif
                 </div>

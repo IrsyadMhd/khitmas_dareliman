@@ -154,6 +154,18 @@ class AdminController extends Controller
         return back()->with('success', 'Status kehadiran berhasil dibatalkan.');
     }
 
+    public function hapusData($id)
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            return back()->with('error', 'Anda tidak memiliki akses untuk menghapus data. Silakan login menggunakan password superadmin.');
+        }
+
+        $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
+        $pendaftar->delete();
+
+        return back()->with('success', 'Data pendaftaran ganda berhasil dihapus secara permanen.');
+    }
+
     public function showBarcode($id)
     {
         if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {

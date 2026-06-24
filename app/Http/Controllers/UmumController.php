@@ -74,6 +74,10 @@ class UmumController extends Controller
 
         $kodeRegistrasi = 'KHT-' . strtoupper(Str::random(8));
 
+        // Generate schedule
+        $scheduleService = app(\App\Services\ScheduleService::class);
+        $schedule = $scheduleService->assignSchedule();
+
         $pendaftaran = Pendaftaran::create([
             'is_umum' => true,
             'siswa_id' => $siswaId,
@@ -91,6 +95,8 @@ class UmumController extends Controller
             'consent_wali' => true,
             'kode_registrasi' => $kodeRegistrasi,
             'status_kehadiran' => 'belum_hadir',
+            'jadwal_hari' => $schedule['hari'],
+            'jadwal_jam' => $schedule['jam']
         ]);
 
         // Generate QR Code
@@ -191,14 +197,23 @@ class UmumController extends Controller
             return back()->withErrors(['login' => 'Password salah. Gunakan 4 digit terakhir nomor HP Anda.'])->withInput();
         }
 
-        // Cek apakah ada pendaftaran dengan nomor HP ini
-        $exists = Pendaftaran::where('is_umum', true)->where('hp_wali', $hp)->exists();
-        if (!$exists) {
+        // Variasi nomor HP untuk pencarian (08x, 628x, 8x)
+        $baseHp = preg_replace('/^0|^62/', '', $hp);
+
+        // Cek apakah ada pendaftaran dengan variasi nomor HP ini
+        $pendaftaran = \App\Models\Pendaftaran::where('is_umum', true)
+            ->where(function($query) use ($baseHp) {
+                $query->where('hp_wali', $baseHp)
+                      ->orWhere('hp_wali', '0' . $baseHp)
+                      ->orWhere('hp_wali', '62' . $baseHp);
+            })->first();
+
+        if (!$pendaftaran) {
             return back()->withErrors(['login' => 'Tidak ditemukan data pendaftaran dengan nomor HP ini.'])->withInput();
         }
 
-        // Login sukses
-        session(['umum_hp_wali' => $hp]);
+        // Login sukses, simpan nomor hp yang AKTUAL ada di database ke session
+        session(['umum_hp_wali' => $pendaftaran->hp_wali]);
 
         return redirect()->route('umum.dashboard');
     }

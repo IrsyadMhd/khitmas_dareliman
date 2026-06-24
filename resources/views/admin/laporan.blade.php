@@ -111,6 +111,22 @@
                     <td style="padding: 0.75rem 1rem;">
                         <div style="display: flex; gap: 0.5rem;">
                             <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
+                            @if(empty($statusFilter))
+                            <button type="button" onclick="showJadwalModal('{{ $p->id }}', '{{ addslashes($p->nama_lengkap) }}', '{{ $p->jadwal_hari }}', '{{ $p->jadwal_jam }}')" class="btn-primary" style="background: var(--text-secondary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Input Jadwal</button>
+                            @endif
+                            @php
+                                $waText = "Assalamu'alaikum warahmatullahi wabarakatuh,\n\nBapak/Ibu wali dari ananda *{$p->nama_lengkap}*.\nBerikut adalah informasi jadwal Khitanan Massal Dareliman:\n\n📅 Hari/Tanggal: *" . ($p->jadwal_hari ?: 'Menunggu Jadwal') . "*\n⏰ Jam Kedatangan: *" . ($p->jadwal_jam ?: '-') . "*\n\nUntuk melihat barcode pendaftaran, silakan login ke sistem melalui link berikut:\n\n";
+                                if ($p->is_umum) {
+                                    $waText .= "🔗 Link Login: " . route('umum.login') . "\n👤 Akun (No WA): " . $p->hp_wali . "\n🔑 Password: " . substr(preg_replace('/[^0-9]/', '', $p->hp_wali), -4) . " (4 digit terakhir no HP)\n";
+                                } else {
+                                    $waText .= "🔗 Link Login: " . route('login') . "\n👤 Akun: Email atau NIS Siswa\n🔑 Password: Password Portal Dareliman\n";
+                                }
+                                $waText .= "\nMohon hadir tepat waktu sesuai jadwal. Terima kasih.";
+                                $waNumber = preg_replace('/[^0-9]/', '', $p->hp_wali);
+                                if (str_starts_with($waNumber, '0')) { $waNumber = '62' . substr($waNumber, 1); }
+                                $waUrl = "https://wa.me/{$waNumber}?text=" . urlencode($waText);
+                            @endphp
+                            <a href="{{ $waUrl }}" target="_blank" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; text-decoration: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center;">Pesan</a>
                             @if($p->status_kehadiran === 'hadir')
                             <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                                 @csrf
@@ -199,6 +215,22 @@
                 @if(session('admin_role') === 'superadmin')
                 <div style="display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;">
                     <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
+                    @if(empty($statusFilter))
+                    <button type="button" onclick="showJadwalModal('{{ $p->id }}', '{{ addslashes($p->nama_lengkap) }}', '{{ $p->jadwal_hari }}', '{{ $p->jadwal_jam }}')" class="btn-primary" style="background: var(--text-secondary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;">Input Jadwal</button>
+                    @endif
+                    @php
+                        $waTextMobile = "Assalamu'alaikum warahmatullahi wabarakatuh,\n\nBapak/Ibu wali dari ananda *{$p->nama_lengkap}*.\nBerikut adalah informasi jadwal Khitanan Massal Dareliman:\n\n📅 Hari/Tanggal: *" . ($p->jadwal_hari ?: 'Menunggu Jadwal') . "*\n⏰ Jam Kedatangan: *" . ($p->jadwal_jam ?: '-') . "*\n\nUntuk melihat barcode pendaftaran, silakan login ke sistem melalui link berikut:\n\n";
+                        if ($p->is_umum) {
+                            $waTextMobile .= "🔗 Link Login: " . route('umum.login') . "\n👤 Akun (No WA): " . $p->hp_wali . "\n🔑 Password: " . substr(preg_replace('/[^0-9]/', '', $p->hp_wali), -4) . " (4 digit terakhir no HP)\n";
+                        } else {
+                            $waTextMobile .= "🔗 Link Login: " . route('login') . "\n👤 Akun: Email atau NIS Siswa\n🔑 Password: Password Portal Dareliman\n";
+                        }
+                        $waTextMobile .= "\nMohon hadir tepat waktu sesuai jadwal. Terima kasih.";
+                        $waNumberMobile = preg_replace('/[^0-9]/', '', $p->hp_wali);
+                        if (str_starts_with($waNumberMobile, '0')) { $waNumberMobile = '62' . substr($waNumberMobile, 1); }
+                        $waUrlMobile = "https://wa.me/{$waNumberMobile}?text=" . urlencode($waTextMobile);
+                    @endphp
+                    <a href="{{ $waUrlMobile }}" target="_blank" class="btn-primary" style="background: #25D366; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.75rem; text-decoration: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5rem; margin-bottom: 0.5rem;">Kirim Pesan WA</a>
                     @if($p->status_kehadiran === 'hadir')
                     <form action="{{ route('admin.laporan.batal', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan kehadiran {{ $p->nama_lengkap }}?');" style="margin: 0;">
                         @csrf
@@ -238,8 +270,48 @@
     </div>
 
 </div>
+<!-- Modal Jadwal -->
+<div id="jadwalModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background-color: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); width: 90%; max-width: 400px; text-align: left; position: relative;">
+        <h3 id="jadwalModalTitle" style="margin-top: 0; color: var(--primary-dark); font-size: 1.125rem;">Input Jadwal</h3>
+        
+        <form id="jadwalForm" method="POST" action="">
+            @csrf
+            <div class="form-group">
+                <label class="form-label" for="jadwal_hari">Hari / Tanggal</label>
+                <input type="text" id="jadwal_hari" name="jadwal_hari" class="form-input" placeholder="Contoh: Jumat, 26/06/2026">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="jadwal_jam">Jam</label>
+                <input type="text" id="jadwal_jam" name="jadwal_jam" class="form-input" placeholder="Contoh: 09.00">
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+                <button type="button" onclick="closeJadwalModal()" style="padding: 0.5rem 1rem; border: none; border-radius: 4px; background: var(--text-muted); color: white; cursor: pointer; font-size: 0.875rem;">Batal</button>
+                <button type="submit" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Simpan Jadwal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+    function showJadwalModal(id, nama, hari, jam) {
+        document.getElementById('jadwalModal').style.display = 'flex';
+        document.getElementById('jadwalModalTitle').innerText = 'Input Jadwal: ' + nama;
+        
+        document.getElementById('jadwal_hari').value = hari || '';
+        document.getElementById('jadwal_jam').value = jam || '';
+        
+        let form = document.getElementById('jadwalForm');
+        form.action = '/laporan/' + id + '/jadwal';
+    }
+
+    function closeJadwalModal() {
+        document.getElementById('jadwalModal').style.display = 'none';
+    }
+
     function showBarcodeModal(id, kode, nama) {
         document.getElementById('modalKode').innerText = kode;
         document.getElementById('modalNama').innerText = nama;

@@ -24,6 +24,16 @@
     <form action="{{ route('admin.settings.update') }}" method="POST">
         @csrf
 
+        <!-- Batas Maksimal Kuota -->
+        <h3 style="margin-bottom: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; color: var(--primary);">Batas Maksimal Kuota Pendaftar</h3>
+        <div style="background: var(--bg-page); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 2rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="max_kuota">Total Kuota Maksimal (Semua Jalur)</label>
+                <input type="number" name="max_kuota" id="max_kuota" class="form-input" value="{{ $settings['max_kuota'] ?? 300 }}" required min="1">
+                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Pendaftaran akan otomatis ditutup (pesan "Kuota Penuh") jika jumlah peserta yang mendaftar sudah mencapai batas ini.</small>
+            </div>
+        </div>
+
         <!-- JALUR DARELIMAN -->
         <div style="background: var(--bg-page); padding: 1.5rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; border: 1px solid var(--border);">
             <h3 style="margin-top: 0; color: var(--primary-dark);">Jalur Siswa Dareliman</h3>

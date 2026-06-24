@@ -55,6 +55,7 @@ class AdminController extends Controller
         }
 
         $request->validate([
+            'max_kuota' => 'required|integer|min:1',
             'dareliman_mode' => 'required|in:manual_open,manual_closed,schedule',
             'dareliman_start' => 'nullable|date',
             'dareliman_end' => 'nullable|date',
@@ -64,6 +65,7 @@ class AdminController extends Controller
         ]);
 
         $this->settingsService->updateSettings([
+            'max_kuota' => (int) $request->max_kuota,
             'dareliman_mode' => $request->dareliman_mode,
             'dareliman_start' => $request->dareliman_start,
             'dareliman_end' => $request->dareliman_end,
@@ -164,6 +166,25 @@ class AdminController extends Controller
         $pendaftar->delete();
 
         return back()->with('success', 'Data pendaftaran ganda berhasil dihapus secara permanen.');
+    }
+
+    public function updateJadwal(Request $request, $id)
+    {
+        if (!session('admin_logged_in') || session('admin_role') !== 'superadmin') {
+            return back()->with('error', 'Anda tidak memiliki akses untuk mengedit jadwal.');
+        }
+
+        $request->validate([
+            'jadwal_hari' => 'nullable|string|max:255',
+            'jadwal_jam' => 'nullable|string|max:255',
+        ]);
+
+        $pendaftar = \App\Models\Pendaftaran::findOrFail($id);
+        $pendaftar->jadwal_hari = $request->jadwal_hari;
+        $pendaftar->jadwal_jam = $request->jadwal_jam;
+        $pendaftar->save();
+
+        return back()->with('success', 'Jadwal peserta berhasil diperbarui.');
     }
 
     public function showBarcode($id)

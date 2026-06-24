@@ -165,6 +165,10 @@ class PendaftaranController extends Controller
         // Generate unique registration code
         $kodeRegistrasi = 'KHT-' . strtoupper(Str::random(8));
 
+        // Generate schedule
+        $scheduleService = app(\App\Services\ScheduleService::class);
+        $schedule = $scheduleService->assignSchedule();
+
         // Create the registration record
         try {
             $pendaftaran = Pendaftaran::create([
@@ -189,6 +193,8 @@ class PendaftaranController extends Controller
                 'consent_wali' => true,
                 'kode_registrasi' => $kodeRegistrasi,
                 'status_kehadiran' => 'belum_hadir',
+                'jadwal_hari' => $schedule['hari'],
+                'jadwal_jam' => $schedule['jam']
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle unique constraint violation (race condition)

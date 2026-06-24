@@ -42,6 +42,11 @@ class SettingsService
     {
         $settings = $this->getSettings();
         
+        $maxKuota = $settings['max_kuota'] ?? 300;
+        if (\App\Models\Pendaftaran::count() >= $maxKuota) {
+            return false;
+        }
+
         if ($settings['dareliman_mode'] === 'manual_open') return true;
         if ($settings['dareliman_mode'] === 'manual_closed') return false;
         
@@ -56,6 +61,11 @@ class SettingsService
     {
         $settings = $this->getSettings();
         
+        $maxKuota = $settings['max_kuota'] ?? 300;
+        if (\App\Models\Pendaftaran::count() >= $maxKuota) {
+            return false;
+        }
+
         if ($settings['umum_mode'] === 'manual_open') return true;
         if ($settings['umum_mode'] === 'manual_closed') return false;
         
@@ -88,6 +98,7 @@ class SettingsService
     private function createDefaultSettings(): void
     {
         $defaults = [
+            'max_kuota' => 300,
             'dareliman_mode' => 'manual_open', // manual_open, manual_closed, schedule
             'dareliman_start' => null,
             'dareliman_end' => null,

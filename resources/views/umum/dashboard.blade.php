@@ -23,6 +23,12 @@
     </div>
 
     <div class="biodata-section" style="text-align: left;">
+        <div class="biodata-item" style="background: var(--primary-light); padding: 0.75rem; border-radius: 6px; border-left: 4px solid var(--primary); margin-bottom: 0.75rem;">
+            <div class="biodata-label" style="color: var(--primary-dark); font-weight: bold; margin-bottom: 0.25rem;">📅 Jadwal Kehadiran</div>
+            <div class="biodata-value" style="font-weight: bold; font-size: 1.1rem; color: var(--primary);">
+                {{ $pendaftaran->jadwal_hari ? $pendaftaran->jadwal_hari : 'Menunggu Jadwal' }} - {{ $pendaftaran->jadwal_jam ? $pendaftaran->jadwal_jam : '-' }}
+            </div>
+        </div>
         <div class="biodata-item">
             <div class="biodata-label">Nama Peserta</div>
             <div class="biodata-value">{{ $pendaftaran->nama_lengkap }}</div>

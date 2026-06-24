@@ -9,7 +9,7 @@
     
     <h2 class="header-title" style="color: var(--text-primary); margin-bottom: 1rem;">Mohon Maaf</h2>
     <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem;">
-        Pendaftaran baru saat ini sedang ditutup.
+        Pendaftaran baru saat ini sedang ditutup atau <strong style="color: var(--danger);">Kuota Penuh</strong>.
     </p>
 
     <div style="background-color: var(--bg-page); padding: 1.5rem; border-radius: var(--radius-sm); border: 1px dashed var(--border); margin-bottom: 2rem; text-align: center;">

@@ -11,6 +11,7 @@
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
             <a href="{{ route('admin.importJadwal') }}" class="btn-primary" style="background: var(--text-muted); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Import Jadwal</a>
             <a href="{{ route('scanner.hadiah.index') }}" target="_blank" class="btn-primary" style="background: var(--primary); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Scanner Hadiah</a>
+            <a href="{{ route('admin.hadiah.diambil') }}" class="btn-primary" style="background: #7c3aed; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Hadiah Diambil</a>
             <a href="{{ route('scanner.index') }}" target="_blank" class="btn-primary" style="background: var(--warning); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Scanner Hadir</a>
             <a href="{{ route('admin.laporan') }}" class="btn-primary" style="background: var(--success); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Laporan Data</a>
             <a href="{{ route('admin.logout') }}" class="btn-primary" style="background: var(--danger); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Keluar</a>
@@ -121,3 +122,4 @@
         .section-title { font-size: 1.1rem; flex-wrap: wrap; }
     }
 </style>
+

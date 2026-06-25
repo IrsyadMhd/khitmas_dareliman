@@ -54,6 +54,7 @@ Route::prefix('panel-rahasia')->name('admin.')->group(function () {
     Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
 
     Route::get('/laporan', [\App\Http\Controllers\AdminController::class, 'showLaporan'])->name('laporan');
+    Route::get('/hadiah-diambil', [\App\Http\Controllers\AdminController::class, 'showHadiahDiambil'])->name('hadiah.diambil');
     Route::get('/laporan/{id}/barcode', [\App\Http\Controllers\AdminController::class, 'showBarcode'])->name('laporan.barcode');
     Route::post('/laporan/{id}/batal', [\App\Http\Controllers\AdminController::class, 'batalHadir'])->name('laporan.batal');
     Route::delete('/laporan/{id}/hapus', [\App\Http\Controllers\AdminController::class, 'hapusData'])->name('laporan.hapus');
@@ -87,4 +88,5 @@ Route::post('/api/checkin/{kode}', [PendaftaranController::class, 'checkin'])->n
 
 // Database Export API (Protected by API Key)
 Route::get('/api/pendaftar', [\App\Http\Controllers\ApiController::class, 'getPendaftar'])->name('api.pendaftar');
+
 

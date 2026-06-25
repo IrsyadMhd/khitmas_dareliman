@@ -77,6 +77,36 @@ class AdminController extends Controller
         return back()->with('success', 'Pengaturan berhasil disimpan.');
     }
 
+    public function showHadiahDiambil(Request $request)
+    {
+        if (!session('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $query = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')
+            ->orderByDesc('waktu_ambil_hadiah')
+            ->orderBy('nama_lengkap');
+
+        $jalurFilter = $request->input('jalur');
+        if ($jalurFilter === 'umum') {
+            $query->where('is_umum', true);
+        } elseif ($jalurFilter === 'dareliman') {
+            $query->where('is_umum', false);
+        }
+
+        $pendaftarans = $query->get();
+        $totalSemua = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->count();
+        $totalDareliman = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('is_umum', false)->count();
+        $totalUmum = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('is_umum', true)->count();
+
+        return view('admin.hadiah-diambil', compact(
+            'pendaftarans',
+            'jalurFilter',
+            'totalSemua',
+            'totalDareliman',
+            'totalUmum'
+        ));
+    }
     public function showLaporan(\Illuminate\Http\Request $request)
     {
         if (!session('admin_logged_in')) {
@@ -295,3 +325,5 @@ class AdminController extends Controller
         }
     }
 }
+
+

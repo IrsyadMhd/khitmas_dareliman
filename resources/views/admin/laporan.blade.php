@@ -9,6 +9,7 @@
             Laporan Data Pendaftar
         </h2>
         <div>
+            <a href="{{ route('admin.hadiah.diambil') }}" class="btn-primary" style="background: #7c3aed; padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Hadiah Diambil</a>
             <a href="{{ route('admin.settings') }}" class="btn-primary" style="background: var(--text-secondary); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Kembali</a>
             <a href="{{ route('admin.logout') }}" class="btn-primary" style="background: var(--danger); padding: 0.5rem 1rem; font-size: 0.875rem; text-decoration: none;">Keluar</a>
         </div>
@@ -409,3 +410,4 @@
         .section-title { font-size: 1.1rem; flex-wrap: wrap; }
     }
 </style>
+

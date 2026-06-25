@@ -36,6 +36,8 @@ class Pendaftaran extends Model
         'kode_registrasi',
         'status_kehadiran',
         'waktu_checkin',
+        'status_hadiah',
+        'waktu_ambil_hadiah',
     ];
 
     /**
@@ -48,6 +50,7 @@ class Pendaftaran extends Model
             'consent_wali' => 'boolean',
             'is_umum' => 'boolean',
             'waktu_checkin' => 'datetime',
+            'waktu_ambil_hadiah' => 'datetime',
             'id_jenis_sekolah' => 'integer',
         ];
     }
@@ -84,3 +87,4 @@ class Pendaftaran extends Model
         return static::where('siswa_id', $siswaId)->first();
     }
 }
+

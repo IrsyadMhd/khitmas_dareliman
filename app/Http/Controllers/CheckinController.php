@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Throwable;
 
 class CheckinController extends Controller
 {
@@ -201,10 +202,29 @@ class CheckinController extends Controller
         }
 
         // Tandai sudah ambil
-        $pendaftaran->update([
-            'status_hadiah' => 'sudah',
-            'waktu_ambil_hadiah' => now()
-        ]);
+        try {
+            $waktuAmbilHadiah = now();
+            $updated = $pendaftaran->update([
+                'status_hadiah' => 'sudah',
+                'waktu_ambil_hadiah' => $waktuAmbilHadiah,
+            ]);
+
+            $pendaftaran->refresh();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mencatat pengambilan hadiah. Silakan scan ulang atau hubungi admin.',
+            ], 500);
+        }
+
+        if (!$updated || $pendaftaran->status_hadiah !== 'sudah' || !$pendaftaran->waktu_ambil_hadiah) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mencatat pengambilan hadiah. Silakan scan ulang atau hubungi admin.',
+            ], 500);
+        }
 
         return response()->json([
             'success' => true,

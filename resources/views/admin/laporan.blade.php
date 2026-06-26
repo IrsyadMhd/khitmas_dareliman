@@ -21,36 +21,23 @@
         </div>
         
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="{{ route('admin.laporan', array_filter(['jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_pesan', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_pesan' ? 'background: #25D366; border: 1px solid #25D366;' : 'background: white; color: #25D366; border: 1px solid #25D366;' }}">Belum Di-WA</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'hadir', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_hadir', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
+            <a href="{{ route('admin.laporan', array_filter(['jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_pesan', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_pesan' ? 'background: #25D366; border: 1px solid #25D366;' : 'background: white; color: #25D366; border: 1px solid #25D366;' }}">Belum Di-WA</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => 'hadir', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_hadir', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
             
             @if(session('admin_role') === 'superadmin')
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'ganda', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => 'ganda', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
             @endif
         </div>
 
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
             <span style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;">Jenkel:</span>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Laki-laki', 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Perempuan', 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Laki-laki'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
+            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Perempuan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
         </div>
 
-        <form method="GET" action="{{ route('admin.laporan') }}" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-            @if($statusFilter)
-            <input type="hidden" name="status" value="{{ $statusFilter }}">
-            @endif
-            @if($jenkelFilter)
-            <input type="hidden" name="jenkel" value="{{ $jenkelFilter }}">
-            @endif
-            <input type="date" name="tanggal" value="{{ $tanggalFilter }}" class="form-input" onchange="this.form.submit()" style="padding: 0.45rem 0.7rem; border-radius: 8px; font-size: 0.85rem; width: auto;">
-            <button type="submit" class="btn-primary" style="padding: 0.45rem 0.8rem; font-size: 0.8rem; border: none;">Terapkan</button>
-            @if($tanggalFilter)
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.45rem 0.8rem; font-size: 0.8rem; text-decoration: none; background: white; color: var(--danger); border: 1px solid var(--danger);">Reset Tanggal</a>
-            @endif
-        </form>
 
         <div style="flex-grow: 1; max-width: 300px; min-width: 200px;">
             <input type="text" id="searchInput" onkeyup="filterLaporan()" class="form-input" placeholder="Cari nama, hp, kode..." style="padding: 0.5rem 1rem; border-radius: 20px;">

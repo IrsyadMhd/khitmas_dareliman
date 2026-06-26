@@ -89,6 +89,12 @@ class AdminController extends Controller
 
         $jalurFilter = $request->input('jalur');
         $jenkelFilter = $request->input('jenkel');
+        $tanggalFilter = $request->input('tanggal');
+
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', (string) $tanggalFilter, $tanggalParts)
+            || !checkdate((int) $tanggalParts[2], (int) $tanggalParts[3], (int) $tanggalParts[1])) {
+            $tanggalFilter = null;
+        }
 
         if (!in_array($jenkelFilter, ['Laki-laki', 'Perempuan'], true)) {
             $jenkelFilter = null;
@@ -104,6 +110,10 @@ class AdminController extends Controller
             $query->where('jenis_kelamin', $jenkelFilter);
         }
 
+        if ($tanggalFilter) {
+            $query->whereDate('waktu_ambil_hadiah', $tanggalFilter);
+        }
+
         $pendaftarans = $query->get();
         $totalSemua = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->count();
         $totalDareliman = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('is_umum', false)->count();
@@ -115,6 +125,7 @@ class AdminController extends Controller
             'pendaftarans',
             'jalurFilter',
             'jenkelFilter',
+            'tanggalFilter',
             'totalSemua',
             'totalDareliman',
             'totalUmum',
@@ -131,6 +142,12 @@ class AdminController extends Controller
         $query = \App\Models\Pendaftaran::orderBy('created_at', 'desc');
         $statusFilter = $request->status;
         $jenkelFilter = $request->input('jenkel');
+        $tanggalFilter = $request->input('tanggal');
+
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', (string) $tanggalFilter, $tanggalParts)
+            || !checkdate((int) $tanggalParts[2], (int) $tanggalParts[3], (int) $tanggalParts[1])) {
+            $tanggalFilter = null;
+        }
 
         if (!in_array($jenkelFilter, ['Laki-laki', 'Perempuan'], true)) {
             $jenkelFilter = null;
@@ -146,6 +163,10 @@ class AdminController extends Controller
 
         if ($jenkelFilter) {
             $query->where('jenis_kelamin', $jenkelFilter);
+        }
+
+        if ($tanggalFilter) {
+            $query->whereDate('created_at', $tanggalFilter);
         }
 
         $pendaftarans = $query->get();
@@ -195,7 +216,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.laporan', compact('pendaftarans', 'statusFilter', 'jenkelFilter'));
+        return view('admin.laporan', compact('pendaftarans', 'statusFilter', 'jenkelFilter', 'tanggalFilter'));
     }
 
     public function batalHadir($id)
@@ -349,4 +370,8 @@ class AdminController extends Controller
         }
     }
 }
+
+
+
+
 

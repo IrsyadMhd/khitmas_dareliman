@@ -44,17 +44,31 @@
             Ditampilkan: <strong>{{ $pendaftarans->count() }}</strong> peserta
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jalurFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'dareliman', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'dareliman' ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Dareliman</a>
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'umum', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'umum' ? 'background: var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Umum</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jalurFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'dareliman', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'dareliman' ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Dareliman</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'umum', 'jenkel' => $jenkelFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'umum' ? 'background: var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Umum</a>
         </div>
 
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
             <span style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;">Jenkel:</span>
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Laki-laki'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
-            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Perempuan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Laki-laki', 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Perempuan', 'tanggal' => $tanggalFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
         </div>
+        <form method="GET" action="{{ route('admin.hadiah.diambil') }}" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            @if($jalurFilter)
+            <input type="hidden" name="jalur" value="{{ $jalurFilter }}">
+            @endif
+            @if($jenkelFilter)
+            <input type="hidden" name="jenkel" value="{{ $jenkelFilter }}">
+            @endif
+            <input type="date" name="tanggal" value="{{ $tanggalFilter }}" class="form-input" onchange="this.form.submit()" style="padding: 0.45rem 0.7rem; border-radius: 8px; font-size: 0.85rem; width: auto;">
+            <button type="submit" class="btn-primary" style="padding: 0.45rem 0.8rem; font-size: 0.8rem; border: none;">Terapkan</button>
+            @if($tanggalFilter)
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.45rem 0.8rem; font-size: 0.8rem; text-decoration: none; background: white; color: var(--danger); border: 1px solid var(--danger);">Reset Tanggal</a>
+            @endif
+        </form>
+
         <div style="flex-grow: 1; max-width: 320px; min-width: 220px;">
             <input type="text" id="searchInput" onkeyup="filterHadiah()" class="form-input" placeholder="Cari nama, kode, wali, hp..." style="padding: 0.5rem 1rem; border-radius: 20px;">
         </div>
@@ -157,4 +171,5 @@
     }
 </style>
 @endpush
+
 

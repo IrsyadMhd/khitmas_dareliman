@@ -36,10 +36,24 @@
             Ditampilkan: <strong>{{ $pendaftarans->count() }}</strong> peserta
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="{{ route('admin.hadiah.diambil') }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jalurFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.hadiah.diambil', ['jalur' => 'dareliman']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'dareliman' ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Dareliman</a>
-            <a href="{{ route('admin.hadiah.diambil', ['jalur' => 'umum']) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'umum' ? 'background: var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Umum</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jalurFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'dareliman', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'dareliman' ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Dareliman</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'umum', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'umum' ? 'background: var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Umum</a>
         </div>
+
+        <form action="{{ route('admin.hadiah.diambil') }}" method="GET" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            @if(!empty($jalurFilter))
+                <input type="hidden" name="jalur" value="{{ $jalurFilter }}">
+            @endif
+            <select name="jenkel" class="form-input" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border-radius: 20px; min-width: 180px;">
+                <option value="">Semua Jenkel</option>
+                <option value="Laki-laki" {{ $jenkelFilter === 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                <option value="Perempuan" {{ $jenkelFilter === 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+            </select>
+            @if(!empty($jenkelFilter))
+                <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter])) }}" style="color: var(--danger); font-size: 0.8rem; text-decoration: none;">Reset Jenkel</a>
+            @endif
+        </form>
         <div style="flex-grow: 1; max-width: 320px; min-width: 220px;">
             <input type="text" id="searchInput" onkeyup="filterHadiah()" class="form-input" placeholder="Cari nama, kode, wali, hp..." style="padding: 0.5rem 1rem; border-radius: 20px;">
         </div>
@@ -142,3 +156,4 @@
     }
 </style>
 @endpush
+

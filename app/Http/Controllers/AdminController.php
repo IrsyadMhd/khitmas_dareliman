@@ -88,10 +88,20 @@ class AdminController extends Controller
             ->orderBy('nama_lengkap');
 
         $jalurFilter = $request->input('jalur');
+        $jenkelFilter = $request->input('jenkel');
+
+        if (!in_array($jenkelFilter, ['Laki-laki', 'Perempuan'], true)) {
+            $jenkelFilter = null;
+        }
+
         if ($jalurFilter === 'umum') {
             $query->where('is_umum', true);
         } elseif ($jalurFilter === 'dareliman') {
             $query->where('is_umum', false);
+        }
+
+        if ($jenkelFilter) {
+            $query->where('jenis_kelamin', $jenkelFilter);
         }
 
         $pendaftarans = $query->get();
@@ -102,6 +112,7 @@ class AdminController extends Controller
         return view('admin.hadiah-diambil', compact(
             'pendaftarans',
             'jalurFilter',
+            'jenkelFilter',
             'totalSemua',
             'totalDareliman',
             'totalUmum'
@@ -115,6 +126,11 @@ class AdminController extends Controller
 
         $query = \App\Models\Pendaftaran::orderBy('created_at', 'desc');
         $statusFilter = $request->status;
+        $jenkelFilter = $request->input('jenkel');
+
+        if (!in_array($jenkelFilter, ['Laki-laki', 'Perempuan'], true)) {
+            $jenkelFilter = null;
+        }
 
         if ($statusFilter === 'hadir') {
             $query->where('status_kehadiran', 'hadir');
@@ -122,6 +138,10 @@ class AdminController extends Controller
             $query->where('status_kehadiran', 'belum_hadir');
         } elseif ($statusFilter === 'belum_pesan') {
             $query->where('is_pesan_dikirim', false);
+        }
+
+        if ($jenkelFilter) {
+            $query->where('jenis_kelamin', $jenkelFilter);
         }
 
         $pendaftarans = $query->get();
@@ -171,7 +191,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.laporan', compact('pendaftarans', 'statusFilter'));
+        return view('admin.laporan', compact('pendaftarans', 'statusFilter', 'jenkelFilter'));
     }
 
     public function batalHadir($id)
@@ -325,5 +345,4 @@ class AdminController extends Controller
         }
     }
 }
-
 

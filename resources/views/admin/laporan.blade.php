@@ -19,25 +19,53 @@
         <div style="color: var(--text-secondary);">
             Total Data: <strong>{{ $pendaftarans->count() }}</strong> anak
         </div>
-        
+
+        @php
+            $laporanParams = function (array $overrides = []) use ($statusFilter, $jenkelFilter, $tanggalFilter) {
+                return array_filter(
+                    array_merge([
+                        'status' => $statusFilter,
+                        'jenkel' => $jenkelFilter,
+                        'tanggal' => $tanggalFilter,
+                    ], $overrides),
+                    fn ($value) => $value !== null && $value !== ''
+                );
+            };
+        @endphp
+
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="{{ route('admin.laporan', array_filter(['jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_pesan', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_pesan' ? 'background: #25D366; border: 1px solid #25D366;' : 'background: white; color: #25D366; border: 1px solid #25D366;' }}">Belum Di-WA</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'hadir', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'belum_hadir', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
-            
+            <a href="{{ route('admin.laporan', $laporanParams(['status' => null])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($statusFilter) ? '' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['status' => 'belum_pesan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_pesan' ? 'background: #25D366; border: 1px solid #25D366;' : 'background: white; color: #25D366; border: 1px solid #25D366;' }}">Belum Di-WA</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['status' => 'hadir'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'hadir' ? 'background: var(--success);' : 'background: white; color: var(--success); border: 1px solid var(--success);' }}">Sudah Hadir</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['status' => 'belum_hadir'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'belum_hadir' ? 'background: var(--danger);' : 'background: white; color: var(--danger); border: 1px solid var(--danger);' }}">Belum Hadir</a>
+
             @if(session('admin_role') === 'superadmin')
-            <a href="{{ route('admin.laporan', array_filter(['status' => 'ganda', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['status' => 'ganda'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $statusFilter == 'ganda' ? 'background: var(--warning); border: 1px solid var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Indikasi Ganda</a>
             @endif
         </div>
 
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
             <span style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;">Jenkel:</span>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Laki-laki'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
-            <a href="{{ route('admin.laporan', array_filter(['status' => $statusFilter, 'jenkel' => 'Perempuan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['jenkel' => null])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['jenkel' => 'Laki-laki'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
+            <a href="{{ route('admin.laporan', $laporanParams(['jenkel' => 'Perempuan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
         </div>
 
+
+        <form method="GET" action="{{ route('admin.laporan') }}" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            @if($statusFilter)
+                <input type="hidden" name="status" value="{{ $statusFilter }}">
+            @endif
+            @if($jenkelFilter)
+                <input type="hidden" name="jenkel" value="{{ $jenkelFilter }}">
+            @endif
+            <label for="tanggalFilter" style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;">Tanggal Check-in:</label>
+            <input type="date" id="tanggalFilter" name="tanggal" value="{{ $tanggalFilter }}" class="form-input" onchange="this.form.submit()" style="padding: 0.45rem 0.75rem; min-width: 150px;">
+            <button type="submit" class="btn-primary" style="padding: 0.45rem 0.8rem; font-size: 0.8rem; border: none; cursor: pointer;">Terapkan</button>
+            @if($tanggalFilter)
+                <a href="{{ route('admin.laporan', $laporanParams(['tanggal' => null])) }}" class="btn-primary" style="background: white; color: var(--danger); border: 1px solid var(--danger); padding: 0.45rem 0.8rem; font-size: 0.8rem; text-decoration: none;">Reset Tanggal</a>
+            @endif
+        </form>
 
         <div style="flex-grow: 1; max-width: 300px; min-width: 200px;">
             <input type="text" id="searchInput" onkeyup="filterLaporan()" class="form-input" placeholder="Cari nama, hp, kode..." style="padding: 0.5rem 1rem; border-radius: 20px;">
@@ -175,7 +203,7 @@
                     @endif
                 </div>
             </div>
-            
+
             <div style="margin-bottom: 0.5rem;">
                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Nama Anak</div>
                 <div style="font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
@@ -219,7 +247,7 @@
                         @endif
                     </div>
                 </div>
-                
+
                 @if(session('admin_role') === 'superadmin')
                 <div style="display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;">
                     <button type="button" onclick="showBarcodeModal('{{ $p->id }}', '{{ $p->kode_registrasi }}', '{{ addslashes($p->nama_lengkap) }}')" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; cursor: pointer;">Barcode</button>
@@ -267,10 +295,10 @@
             <button onclick="closeBarcodeModal()" style="position: absolute; top: 10px; right: 15px; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             <h3 style="margin-top: 0; color: var(--primary);">Barcode Kehadiran</h3>
             <p id="modalKode" style="font-family: monospace; font-weight: bold; font-size: 1.2rem; color: var(--primary);"></p>
-            
+
             <div id="barcodeLoading" style="padding: 2rem; color: var(--text-muted);">Memuat Barcode...</div>
             <div id="barcodeImgContainer" style="display: none; margin-bottom: 1rem;"></div>
-            
+
             <p id="modalNama" style="margin-bottom: 0; font-weight: bold;"></p>
         </div>
     </div>
@@ -280,19 +308,19 @@
 <div id="jadwalModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
     <div style="background-color: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); width: 90%; max-width: 400px; text-align: left; position: relative;">
         <h3 id="jadwalModalTitle" style="margin-top: 0; color: var(--primary-dark); font-size: 1.125rem;">Input Jadwal</h3>
-        
+
         <form id="jadwalForm" method="POST" action="">
             @csrf
             <div class="form-group">
                 <label class="form-label" for="jadwal_hari">Hari / Tanggal</label>
                 <input type="text" id="jadwal_hari" name="jadwal_hari" class="form-input" placeholder="Contoh: Jumat, 26/06/2026">
             </div>
-            
+
             <div class="form-group">
                 <label class="form-label" for="jadwal_jam">Jam</label>
                 <input type="text" id="jadwal_jam" name="jadwal_jam" class="form-input" placeholder="Contoh: 09.00">
             </div>
-            
+
             <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
                 <button type="button" onclick="closeJadwalModal()" style="padding: 0.5rem 1rem; border: none; border-radius: 4px; background: var(--text-muted); color: white; cursor: pointer; font-size: 0.875rem;">Batal</button>
                 <button type="submit" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Simpan Jadwal</button>
@@ -329,10 +357,10 @@
     function showJadwalModal(id, nama, hari, jam) {
         document.getElementById('jadwalModal').style.display = 'flex';
         document.getElementById('jadwalModalTitle').innerText = 'Input Jadwal: ' + nama;
-        
+
         document.getElementById('jadwal_hari').value = hari || '';
         document.getElementById('jadwal_jam').value = jam || '';
-        
+
         let form = document.getElementById('jadwalForm');
         form.action = '/panel-rahasia/laporan/' + id + '/jadwal';
     }
@@ -345,14 +373,14 @@
         document.getElementById('modalKode').innerText = kode;
         document.getElementById('modalNama').innerText = nama;
         document.getElementById('barcodeModal').style.display = 'flex';
-        
+
         const imgContainer = document.getElementById('barcodeImgContainer');
         const loading = document.getElementById('barcodeLoading');
-        
+
         imgContainer.style.display = 'none';
         loading.style.display = 'block';
         imgContainer.innerHTML = '';
-        
+
         fetch(`/panel-rahasia/laporan/${id}/barcode`)
             .then(response => response.text())
             .then(svg => {
@@ -418,5 +446,3 @@
         .section-title { font-size: 1.1rem; flex-wrap: wrap; }
     }
 </style>
-
-

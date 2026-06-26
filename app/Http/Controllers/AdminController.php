@@ -28,7 +28,7 @@ class AdminController extends Controller
             session(['admin_logged_in' => true, 'admin_role' => 'readonly']);
             return redirect()->route('admin.settings');
         }
-        
+
         // Password Superadmin (Bisa Hapus)
         if ($request->password === '121314') {
             session(['admin_logged_in' => true, 'admin_role' => 'superadmin']);
@@ -142,6 +142,13 @@ class AdminController extends Controller
         $query = \App\Models\Pendaftaran::orderBy('created_at', 'desc');
         $statusFilter = $request->status;
         $jenkelFilter = $request->input('jenkel');
+        $tanggalFilter = $request->input('tanggal');
+
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', (string) $tanggalFilter, $tanggalParts)
+            || !checkdate((int) $tanggalParts[2], (int) $tanggalParts[3], (int) $tanggalParts[1])) {
+            $tanggalFilter = null;
+        }
+
 
 
         if (!in_array($jenkelFilter, ['Laki-laki', 'Perempuan'], true)) {
@@ -160,12 +167,16 @@ class AdminController extends Controller
             $query->where('jenis_kelamin', $jenkelFilter);
         }
 
+        if ($tanggalFilter) {
+            $query->whereDate('waktu_checkin', $tanggalFilter);
+        }
+
 
         $pendaftarans = $query->get();
 
         if (session('admin_role') === 'superadmin') {
             $allRecords = \App\Models\Pendaftaran::all();
-            
+
             foreach ($pendaftarans as $p) {
                 $p->duplicate_status = 'green';
                 $p->duplicate_reason = 'Aman, tidak ada indikasi ganda.';
@@ -175,12 +186,12 @@ class AdminController extends Controller
 
                     $name1 = strtolower(trim($p->nama_lengkap));
                     $name2 = strtolower(trim($other->nama_lengkap));
-                    
+
                     if ($name1 === $name2) {
                         if ($p->tanggal_lahir->equalTo($other->tanggal_lahir)) {
                             $p->duplicate_status = 'red';
                             $p->duplicate_reason = 'Sangat Identik: Nama & Tanggal Lahir sama persis dengan pendaftar lain.';
-                            break; 
+                            break;
                         } else {
                             if ($p->duplicate_status !== 'red') {
                                 $p->duplicate_status = 'yellow';
@@ -208,7 +219,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.laporan', compact('pendaftarans', 'statusFilter', 'jenkelFilter'));
+        return view('admin.laporan', compact('pendaftarans', 'statusFilter', 'jenkelFilter', 'tanggalFilter'));
     }
 
     public function batalHadir($id)
@@ -279,7 +290,7 @@ class AdminController extends Controller
 
         $pendaftaran = \App\Models\Pendaftaran::findOrFail($id);
         $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(250)->margin(4)->generate($pendaftaran->kode_registrasi);
-        
+
         return response($svg)->header('Content-Type', 'image/svg+xml');
     }
 
@@ -362,9 +373,3 @@ class AdminController extends Controller
         }
     }
 }
-
-
-
-
-
-

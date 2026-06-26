@@ -108,6 +108,8 @@ class AdminController extends Controller
         $totalSemua = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->count();
         $totalDareliman = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('is_umum', false)->count();
         $totalUmum = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('is_umum', true)->count();
+        $totalLaki = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('jenis_kelamin', 'Laki-laki')->count();
+        $totalPerempuan = \App\Models\Pendaftaran::where('status_hadiah', 'sudah')->where('jenis_kelamin', 'Perempuan')->count();
 
         return view('admin.hadiah-diambil', compact(
             'pendaftarans',
@@ -115,7 +117,9 @@ class AdminController extends Controller
             'jenkelFilter',
             'totalSemua',
             'totalDareliman',
-            'totalUmum'
+            'totalUmum',
+            'totalLaki',
+            'totalPerempuan'
         ));
     }
     public function showLaporan(\Illuminate\Http\Request $request)

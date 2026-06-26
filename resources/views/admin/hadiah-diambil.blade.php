@@ -29,6 +29,14 @@
             <div style="color: var(--text-secondary); font-size: 0.85rem;">Umum</div>
             <div style="font-size: 1.75rem; font-weight: 700; color: var(--warning);">{{ $totalUmum }}</div>
         </div>
+        <div style="background: #eff6ff; border: 1px solid #2563eb; border-radius: var(--radius-sm); padding: 1rem;">
+            <div style="color: var(--text-secondary); font-size: 0.85rem;">Laki-laki</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #2563eb;">{{ $totalLaki }}</div>
+        </div>
+        <div style="background: #fdf2f8; border: 1px solid #db2777; border-radius: var(--radius-sm); padding: 1rem;">
+            <div style="color: var(--text-secondary); font-size: 0.85rem;">Perempuan</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #db2777;">{{ $totalPerempuan }}</div>
+        </div>
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
@@ -41,19 +49,12 @@
             <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => 'umum', 'jenkel' => $jenkelFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jalurFilter === 'umum' ? 'background: var(--warning);' : 'background: white; color: var(--warning); border: 1px solid var(--warning);' }}">Umum</a>
         </div>
 
-        <form action="{{ route('admin.hadiah.diambil') }}" method="GET" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-            @if(!empty($jalurFilter))
-                <input type="hidden" name="jalur" value="{{ $jalurFilter }}">
-            @endif
-            <select name="jenkel" class="form-input" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border-radius: 20px; min-width: 180px;">
-                <option value="">Semua Jenkel</option>
-                <option value="Laki-laki" {{ $jenkelFilter === 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                <option value="Perempuan" {{ $jenkelFilter === 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-            </select>
-            @if(!empty($jenkelFilter))
-                <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter])) }}" style="color: var(--danger); font-size: 0.8rem; text-decoration: none;">Reset Jenkel</a>
-            @endif
-        </form>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <span style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;">Jenkel:</span>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ empty($jenkelFilter) ? 'background: var(--primary);' : 'background: white; color: var(--primary); border: 1px solid var(--primary);' }}">Semua</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Laki-laki'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Laki-laki' ? 'background: #2563eb; border: 1px solid #2563eb;' : 'background: white; color: #2563eb; border: 1px solid #2563eb;' }}">Laki-laki</a>
+            <a href="{{ route('admin.hadiah.diambil', array_filter(['jalur' => $jalurFilter, 'jenkel' => 'Perempuan'])) }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; {{ $jenkelFilter === 'Perempuan' ? 'background: #db2777; border: 1px solid #db2777;' : 'background: white; color: #db2777; border: 1px solid #db2777;' }}">Perempuan</a>
+        </div>
         <div style="flex-grow: 1; max-width: 320px; min-width: 220px;">
             <input type="text" id="searchInput" onkeyup="filterHadiah()" class="form-input" placeholder="Cari nama, kode, wali, hp..." style="padding: 0.5rem 1rem; border-radius: 20px;">
         </div>
